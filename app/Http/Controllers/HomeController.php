@@ -21,33 +21,10 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index($day = 0)
     {
-        $days = [
-            'Saturday' => 'Sabado',
-            'Sunday' => 'Domingo',
-            'Monday' => 'Lunes',
-            'Tuesday' => 'Martes',
-            'Wednesday' => 'Miercoles',
-            'Thursday' => 'Jueves',
-            'Friday' => 'Viernes'
-        ];
 
-        $months = [
-            'January' => 'Enero',
-            'February' => 'Febrero',
-            'March' => 'Marzo',
-            'April' => 'Abril',
-            'May' => 'Mayo',
-            'June' => 'Junio',
-            'July' => 'Julio',
-            'August' => 'Agosto',
-            'September' => 'Septiembre',
-            'October' => 'Octubre',
-            'November' => 'Noviembre',
-            'December' => 'Diciembre'
-        ];
 
-        return view('home')->with(compact('days','months'));
+        return view('home')->with(compact('day'));
     }
 }

@@ -14,12 +14,12 @@
                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/statistics.png"/>
                 </button>
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    <button type="button" class="btn btn-light border">
+                    <a :href="'/home/' + (todaydate - 1)" class="btn btn-light border">
                         <img src="https://img.icons8.com/fluent-systems-filled/15/000000/back.png"/> Anterior
-                    </button>
-                    <button type="button" class="btn btn-light border">
+                    </a>
+                    <a :href="'/home/' + (todaydate + 1)" class="btn btn-light border">
                         Siguiente <img src="https://img.icons8.com/fluent-systems-filled/15/000000/more-than.png"/>
-                    </button>
+                    </a>
                 </div>
             </div>
             <div class="col-md-10">
