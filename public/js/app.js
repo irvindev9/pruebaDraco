@@ -1940,11 +1940,60 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     todaydate: Number
   },
-  mounted: function mounted() {// console.log('Component mounted.')
+  data: function data() {
+    return {
+      countDown: 10,
+      timer: '00:00:00',
+      restart: 0,
+      pause: false
+    };
   },
   computed: {
     datetask: function datetask() {
@@ -1958,6 +2007,25 @@ __webpack_require__.r(__webpack_exports__);
       var fecha = new Date(today.setDate(today.getDate() + this.todaydate)).toLocaleDateString('es-MX', options);
       return fecha;
     }
+  },
+  methods: {
+    countDownTimer: function countDownTimer() {
+      var _this = this;
+
+      if (this.countDown > 0) {
+        setTimeout(function () {
+          _this.countDown -= 1;
+          var date = new Date(0);
+          date.setSeconds(_this.countDown);
+          _this.timer = date.toISOString().substr(11, 8);
+
+          _this.countDownTimer();
+        }, 1000);
+      }
+    }
+  },
+  created: function created() {
+    this.countDownTimer();
   }
 });
 
@@ -37554,14 +37622,65 @@ var render = function() {
       _c("div", { staticClass: "col-md-10" }, [
         _c("div", { staticClass: "card" }, [
           _c("div", { staticClass: "card-header" }, [
-            _vm._v(
-              "\n                   " +
-                _vm._s(_vm.datetask) +
-                "\n                "
-            )
+            _c("div", { staticClass: "row" }, [
+              _c("div", { staticClass: "col-6" }, [
+                _vm._v(
+                  "\n                           " +
+                    _vm._s(_vm.datetask) +
+                    "\n                       "
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-6 text-right" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-light",
+                    attrs: { title: "Iniciar" },
+                    on: {
+                      click: function($event) {
+                        _vm.countDown = 10
+                        _vm.countDownTimer()
+                      }
+                    }
+                  },
+                  [
+                    _c("img", {
+                      attrs: {
+                        src:
+                          "https://img.icons8.com/fluent-systems-filled/15/000000/circled-play.png"
+                      }
+                    })
+                  ]
+                ),
+                _vm._v(" "),
+                _vm._m(2),
+                _vm._v(" "),
+                _vm._m(3),
+                _vm._v(" "),
+                _vm._m(4),
+                _vm._v(" "),
+                _c("div", { staticClass: "btn btn-light border" }, [
+                  _c("span", { attrs: { id: "timer" } }, [
+                    _vm._v(_vm._s(_vm.timer))
+                  ])
+                ])
+              ])
+            ])
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "card-body" })
+          _c(
+            "div",
+            { staticClass: "card-body" },
+            _vm._l(5, function(n) {
+              return _c("div", { staticClass: "row border-bottom mb-3" }, [
+                _vm._m(5, true),
+                _vm._v(" "),
+                _vm._m(6, true)
+              ])
+            }),
+            0
+          )
         ])
       ])
     ])
@@ -37573,7 +37692,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "col-md-5 my-1" }, [
-      _c("a", { staticClass: "btn btn-light px-2" }, [
+      _c("a", { staticClass: "btn btn-light px-2 border" }, [
         _c("img", {
           attrs: {
             src:
@@ -37589,6 +37708,24 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "col-md-5 my-1 text-right" }, [
+      _c("button", { staticClass: "btn btn-light border" }, [
+        _c("img", {
+          attrs: {
+            src:
+              "https://img.icons8.com/fluent-systems-filled/15/000000/report-card.png"
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c("button", { staticClass: "btn btn-light border" }, [
+        _c("img", {
+          attrs: {
+            src:
+              "https://img.icons8.com/fluent-systems-filled/15/000000/statistics.png"
+          }
+        })
+      ]),
+      _vm._v(" "),
       _c(
         "div",
         {
@@ -37598,7 +37735,7 @@ var staticRenderFns = [
         [
           _c(
             "button",
-            { staticClass: "btn btn-light", attrs: { type: "button" } },
+            { staticClass: "btn btn-light border", attrs: { type: "button" } },
             [
               _c("img", {
                 attrs: {
@@ -37612,13 +37749,111 @@ var staticRenderFns = [
           _vm._v(" "),
           _c(
             "button",
-            { staticClass: "btn btn-light", attrs: { type: "button" } },
+            { staticClass: "btn btn-light border", attrs: { type: "button" } },
             [
               _vm._v("\n                    Siguiente "),
               _c("img", {
                 attrs: {
                   src:
                     "https://img.icons8.com/fluent-systems-filled/15/000000/more-than.png"
+                }
+              })
+            ]
+          )
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      { staticClass: "btn btn-light", attrs: { title: "Pausar" } },
+      [
+        _c("img", {
+          attrs: {
+            src:
+              "https://img.icons8.com/fluent-systems-filled/15/000000/circled-pause.png"
+          }
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      { staticClass: "btn btn-light", attrs: { title: "Reiniciar" } },
+      [
+        _c("img", {
+          attrs: {
+            src:
+              "https://img.icons8.com/fluent-systems-filled/15/000000/rewind-button-round.png"
+          }
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      { staticClass: "btn btn-light", attrs: { title: "Detener" } },
+      [
+        _c("img", {
+          attrs: {
+            src:
+              "https://img.icons8.com/fluent-systems-filled/15/000000/stop-circled.png"
+          }
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-8" }, [
+      _c("b", [_vm._v("Diseño web (Draco Studios)")]),
+      _vm._v(" "),
+      _c("p", [_vm._v("Trabajar mucho")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-4 text-right" }, [
+      _c(
+        "div",
+        {
+          staticClass: "btn-group",
+          attrs: { role: "group", "aria-label": "Basic example" }
+        },
+        [
+          _c(
+            "button",
+            { staticClass: "btn btn-light", attrs: { type: "button" } },
+            [
+              _vm._v(
+                "\n                                    00:24\n                                "
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            { staticClass: "btn btn-light border", attrs: { type: "button" } },
+            [
+              _c("img", {
+                attrs: {
+                  src: "https://img.icons8.com/small/15/000000/edit.png"
                 }
               })
             ]
