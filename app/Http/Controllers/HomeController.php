@@ -23,6 +23,31 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $days = [
+            'Saturday' => 'Sabado',
+            'Sunday' => 'Domingo',
+            'Monday' => 'Lunes',
+            'Tuesday' => 'Martes',
+            'Wednesday' => 'Miercoles',
+            'Thursday' => 'Jueves',
+            'Friday' => 'Viernes'
+        ];
+
+        $months = [
+            'January' => 'Enero',
+            'February' => 'Febrero',
+            'March' => 'Marzo',
+            'April' => 'Abril',
+            'May' => 'Mayo',
+            'June' => 'Junio',
+            'July' => 'Julio',
+            'August' => 'Agosto',
+            'September' => 'Septiembre',
+            'October' => 'Octubre',
+            'November' => 'Noviembre',
+            'December' => 'Diciembre'
+        ];
+
+        return view('home')->with(compact('days','months'));
     }
 }
