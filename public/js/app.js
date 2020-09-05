@@ -1924,9 +1924,40 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log('Component mounted.');
+  props: {
+    todaydate: Number
+  },
+  mounted: function mounted() {// console.log('Component mounted.')
+  },
+  computed: {
+    datetask: function datetask() {
+      var today = new Date(Date.now());
+      var options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      };
+      var fecha = new Date(today.setDate(today.getDate() + this.todaydate)).toLocaleDateString('es-MX', options);
+      return fecha;
+    }
   }
 });
 
@@ -37514,29 +37545,86 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "row justify-content-center" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _vm._m(1),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-10" }, [
+        _c("div", { staticClass: "card" }, [
+          _c("div", { staticClass: "card-header" }, [
+            _vm._v(
+              "\n                   " +
+                _vm._s(_vm.datetask) +
+                "\n                "
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-body" })
+        ])
+      ])
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Example Component")
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an example component.\n                "
-              )
-            ])
-          ])
-        ])
+    return _c("div", { staticClass: "col-md-5 my-1" }, [
+      _c("a", { staticClass: "btn btn-light px-2" }, [
+        _c("img", {
+          attrs: {
+            src:
+              "https://img.icons8.com/fluent-systems-filled/15/000000/plus-math.png"
+          }
+        }),
+        _vm._v(" Agregar tarea\n            ")
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-5 my-1 text-right" }, [
+      _c(
+        "div",
+        {
+          staticClass: "btn-group",
+          attrs: { role: "group", "aria-label": "Basic example" }
+        },
+        [
+          _c(
+            "button",
+            { staticClass: "btn btn-light", attrs: { type: "button" } },
+            [
+              _c("img", {
+                attrs: {
+                  src:
+                    "https://img.icons8.com/fluent-systems-filled/15/000000/back.png"
+                }
+              }),
+              _vm._v(" Anterior\n                ")
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            { staticClass: "btn btn-light", attrs: { type: "button" } },
+            [
+              _vm._v("\n                    Siguiente "),
+              _c("img", {
+                attrs: {
+                  src:
+                    "https://img.icons8.com/fluent-systems-filled/15/000000/more-than.png"
+                }
+              })
+            ]
+          )
+        ]
+      )
     ])
   }
 ]
