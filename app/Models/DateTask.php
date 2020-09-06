@@ -13,6 +13,6 @@ class DateTask extends Model
     ];
 
     public function tasks(){
-        return $this->hasMany(Task::class,'date_id');
+        return $this->hasMany(Task::class,'date_id')->orderBy('order');
     }
 }
