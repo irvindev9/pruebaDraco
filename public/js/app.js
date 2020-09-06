@@ -2027,6 +2027,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     cancel: function cancel() {
       this.newTask = false;
+      this.apiCallGetTask();
     },
     saved: function saved() {
       this.newTask = false;
@@ -2192,6 +2193,53 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'TaskComponent',
   props: {
@@ -2200,16 +2248,32 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       edit: false,
-      timer: ''
+      minutesFixed: ''
     };
   },
   computed: {
     time: function time() {
       var seconds = parseInt(this.task.minutes * 60) + parseInt(this.task.seconds);
-      console.log(seconds);
       var date = new Date(0);
       date.setSeconds(seconds);
       return date.toISOString().substr(11, 8);
+    }
+  },
+  methods: {
+    cancel: function cancel() {
+      this.edit = !this.edit;
+      this.$emit('cancel');
+    }
+  },
+  created: function created() {
+    if (this.task.minutes == "30" && this.task.seconds == "0") {
+      this.minutesFixed = "30";
+    } else if (this.task.minutes == "60" && this.task.seconds == "0") {
+      this.minutesFixed = "60";
+    } else if (this.task.minutes == "120" && this.task.seconds == "0") {
+      this.minutesFixed = "120";
+    } else {
+      this.minutesFixed = "0";
     }
   }
 });
@@ -37987,7 +38051,12 @@ var render = function() {
               _vm._l(_vm.tasks.tasks, function(task) {
                 return _c("task-component", {
                   key: task.id,
-                  attrs: { task: task }
+                  attrs: { task: task },
+                  on: {
+                    cancel: function($event) {
+                      return _vm.cancel()
+                    }
+                  }
                 })
               }),
               _vm._v(" "),
@@ -38295,49 +38364,305 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "row border-bottom mb-3" }, [
-    _c("div", { staticClass: "col-6 col-md-8" }, [
-      _c("b", [_vm._v(_vm._s(_vm.task.title))]),
-      _vm._v(" "),
-      _c("p", [_vm._v(_vm._s(_vm.task.description))])
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "col-6 col-md-4 text-right" }, [
-      _c(
-        "div",
-        {
-          staticClass: "btn-group",
-          attrs: { role: "group", "aria-label": "Basic example" }
-        },
-        [
-          _c(
-            "button",
-            { staticClass: "btn btn-light", attrs: { type: "button" } },
-            [_vm._v("\n                " + _vm._s(_vm.time) + "\n            ")]
-          ),
+  return _c("div", [
+    !_vm.edit
+      ? _c("div", { staticClass: "row border-bottom mb-3" }, [
+          _c("div", { staticClass: "col-6 col-md-8" }, [
+            _c("b", [_vm._v(_vm._s(_vm.task.title))]),
+            _vm._v(" "),
+            _c("p", [_vm._v(_vm._s(_vm.task.description))])
+          ]),
           _vm._v(" "),
-          _vm._m(0)
-        ]
-      )
-    ])
+          _c("div", { staticClass: "col-6 col-md-4 text-right" }, [
+            _c(
+              "div",
+              {
+                staticClass: "btn-group",
+                attrs: { role: "group", "aria-label": "Basic example" }
+              },
+              [
+                _c(
+                  "button",
+                  { staticClass: "btn btn-light", attrs: { type: "button" } },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(_vm.time) +
+                        "\n                "
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-light border",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        _vm.edit = !_vm.edit
+                      }
+                    }
+                  },
+                  [
+                    _c("img", {
+                      attrs: {
+                        src: "https://img.icons8.com/small/15/000000/edit.png"
+                      }
+                    })
+                  ]
+                )
+              ]
+            )
+          ])
+        ])
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.edit
+      ? _c("div", { staticClass: "row border-bottom mb-3" }, [
+          _c("div", { staticClass: "col-6 col-md-8" }, [
+            _c("div", { staticClass: "form-group" }, [
+              _c("label", { attrs: { for: "title" } }, [_vm._v("Titulo")]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.task.title,
+                    expression: "task.title"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: { type: "text", autofocus: "" },
+                domProps: { value: _vm.task.title },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.task, "title", $event.target.value)
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group" }, [
+              _c("label", { attrs: { for: "description" } }, [
+                _vm._v("Descripción")
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.task.description,
+                    expression: "task.description"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: { type: "text" },
+                domProps: { value: _vm.task.description },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.task, "description", $event.target.value)
+                  }
+                }
+              })
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-6 col-md-4 text-right" }, [
+            _c("div", { staticClass: "form-group" }, [
+              _c("label", { attrs: { for: "time" } }, [
+                _vm._v("Tiempo Actividad")
+              ]),
+              _vm._v(" "),
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.minutesFixed,
+                      expression: "minutesFixed"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  on: {
+                    change: function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.minutesFixed = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
+                    }
+                  }
+                },
+                [
+                  _c("option", { attrs: { value: "30" } }, [_vm._v("Corta")]),
+                  _vm._v(" "),
+                  _c("option", { attrs: { value: "60" } }, [_vm._v("Media")]),
+                  _vm._v(" "),
+                  _c("option", { attrs: { value: "120" } }, [_vm._v("Larga")]),
+                  _vm._v(" "),
+                  _c("option", { attrs: { value: "0" } }, [_vm._v("Otro")])
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _vm.minutesFixed == "0"
+              ? _c("div", { staticClass: "form-group" }, [
+                  _c("label", { attrs: { for: "minutos" } }, [
+                    _vm._v("Minutos (" + _vm._s(_vm.task.minutes) + ")")
+                  ]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.task.minutes,
+                        expression: "task.minutes"
+                      }
+                    ],
+                    staticClass: "form-control-range",
+                    attrs: { type: "range", min: "0", max: "120" },
+                    domProps: { value: _vm.task.minutes },
+                    on: {
+                      __r: function($event) {
+                        return _vm.$set(
+                          _vm.task,
+                          "minutes",
+                          $event.target.value
+                        )
+                      }
+                    }
+                  })
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.minutesFixed == "0"
+              ? _c("div", { staticClass: "form-group" }, [
+                  _c("label", { attrs: { for: "segundos" } }, [
+                    _vm._v("Segundos (" + _vm._s(_vm.task.seconds) + ")")
+                  ]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.task.seconds,
+                        expression: "task.seconds"
+                      }
+                    ],
+                    staticClass: "form-control-range",
+                    attrs: { type: "range", min: "0", max: "59" },
+                    domProps: { value: _vm.task.seconds },
+                    on: {
+                      __r: function($event) {
+                        return _vm.$set(
+                          _vm.task,
+                          "seconds",
+                          $event.target.value
+                        )
+                      }
+                    }
+                  })
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group" }, [
+              _c("label", { attrs: { for: "margin" } }, [_vm._v(" ")]),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "form-group",
+                  attrs: { role: "group", "aria-label": "Basic example" }
+                },
+                [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-light border",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          return _vm.cancel()
+                        }
+                      }
+                    },
+                    [_vm._v("Cancelar")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          return _vm.save()
+                        }
+                      }
+                    },
+                    [_vm._v("Guardar")]
+                  )
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group" }, [
+              _c(
+                "div",
+                {
+                  staticClass: "form-group",
+                  attrs: { role: "group", "aria-label": "Basic example" }
+                },
+                [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-danger border",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          return _vm.cancel()
+                        }
+                      }
+                    },
+                    [
+                      _c("img", {
+                        attrs: {
+                          src:
+                            "https://img.icons8.com/small/16/FFFFFF/delete.png"
+                        }
+                      }),
+                      _vm._v(" Borrar\n                    ")
+                    ]
+                  )
+                ]
+              )
+            ])
+          ])
+        ])
+      : _vm._e()
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      { staticClass: "btn btn-light border", attrs: { type: "button" } },
-      [
-        _c("img", {
-          attrs: { src: "https://img.icons8.com/small/15/000000/edit.png" }
-        })
-      ]
-    )
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 

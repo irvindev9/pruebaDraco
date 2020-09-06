@@ -49,7 +49,7 @@
                        </div>
                     </div>
                     <div class="card-body">
-                        <task-component v-for="task in tasks.tasks" :key="task.id" :task="task"/>
+                        <task-component v-for="task in tasks.tasks" :key="task.id" :task="task" v-on:cancel="cancel()"/>
                         <new-task-component :fixedDate="fixedDate" :api_token="user.api_token" v-on:cancel="cancel()" v-on:saved="saved()" v-if="newTask" />
                     </div>
                 </div>
@@ -118,6 +118,7 @@
             },
             cancel() {
                 this.newTask = false
+                this.apiCallGetTask()
             }
             ,
             saved() {
