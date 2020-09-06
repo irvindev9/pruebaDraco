@@ -1,8 +1,8 @@
 <template>
     <div class="row border-bottom mb-3">
         <div class="col-6 col-md-8">
-            <b>Diseño web (Draco Studios)</b>
-            <p>Trabajar mucho</p>
+            <b>{{task.title}}</b>
+            <p>{{task.description}}</p>
         </div>
         <div class="col-6 col-md-4 text-right">
             <div class="btn-group" role="group" aria-label="Basic example">
@@ -21,8 +21,7 @@
 export default {
     name: 'TaskComponent',
     props: {
-        title : String,
-        description: String
+        task : Object
     },
     data(){
         return {

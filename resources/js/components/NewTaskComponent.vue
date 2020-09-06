@@ -3,11 +3,11 @@
         <div class="col-6 col-md-8">
             <div class="form-group">
                 <label for="title">Titulo</label>
-                <input type="text" class="form-control">
+                <input v-model="title" type="text" class="form-control" autofocus>
             </div>
             <div class="form-group">
                 <label for="description">Descripción</label>
-                <input type="text" class="form-control">
+                <input v-model="description" type="text" class="form-control">
             </div>
         </div>
         <div class="col-6 col-md-4 text-right">
@@ -26,13 +26,13 @@
             </div>
             <div v-if="time == '0'" class="form-group">
                 <label for="segundos">Segundos ({{seconds}})</label>
-                <input v-model="seconds" type="range" class="form-control-range" min="0" max="60">
+                <input v-model="seconds" type="range" class="form-control-range" min="0" max="59">
             </div>
             <div class="form-group">
                 <label for="margin">&nbsp;</label>
                 <div class="form-group" role="group" aria-label="Basic example">
-                    <button type="button" class="btn btn-light border" @click="emit()">Cancelar</button>
-                    <button type="button" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-light border" @click="cancel()">Cancelar</button>
+                    <button type="button" class="btn btn-primary" @click="save()">Guardar</button>
                 </div>
             </div>
         </div>
@@ -42,11 +42,17 @@
 <script>
 export default {
     name: 'NewTask',
+    props:{
+        api_token : String,
+        fixedDate : Date,
+    },
     data(){
         return {
             minutes : "0",
             seconds : "0",
-            time : "30"
+            time : "30",
+            title : "",
+            description : "",
         }
     },
     computed:{
@@ -58,11 +64,42 @@ export default {
                 return this.minutes;
             }
             return this.time;
+        },
+        secondsValidated(){
+            if(this.time == '0'){
+                return this.seconds;
+            }
+            return "0";
         }
     },
     methods:{
-        emit(){
-            this.$emit('finish')
+        cancel(){
+            this.$emit('cancel')
+        },
+        save(){
+            if(this.title != ''){
+                axios
+                    .post('/api/tasks?api_token=' + this.api_token,{
+                        params: {
+                            title: this.title,
+                            description: this.description,
+                            minutes: this.minutesValidated,
+                            seconds: this.secondsValidated,
+                            date: this.fixedDate,
+                        }
+                    })
+                    .then(response => (
+                        console.log(response)
+                    ))
+                    .catch(error => 
+                        console.log(error)
+                    )
+                
+                this.$emit('saved')
+            }else{
+                alert('El campo de titulo es obligatorio')
+            }
+            
         }
     }
 }

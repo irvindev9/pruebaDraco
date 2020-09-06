@@ -1973,7 +1973,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
-    todaydate: Number
+    todaydate: Number,
+    user: Object
   },
   data: function data() {
     return {
@@ -1983,28 +1984,26 @@ __webpack_require__.r(__webpack_exports__);
       pause: false,
       newTask: false,
       dateTask: '',
-      tasks: Object
+      tasks: Object,
+      fixedDate: ''
     };
   },
-  computed: {
-    datetask: function datetask() {
-      var today = new Date(Date.now());
-      var options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      };
-      var fecha = new Date(today.setDate(today.getDate() + this.todaydate)).toLocaleDateString('es-MX', options);
-      return fecha;
-    }
-  },
+  computed: {},
   methods: {
     apiCallGetTask: function apiCallGetTask() {
       var _this = this;
 
-      axios.get('/api/tasks').then(function (response) {
-        return _this.tasks = response.data;
+      var today = new Date();
+      today.setDate(today.getDate() + this.todaydate);
+      this.fixedDate = today;
+      axios.get('/api/tasks', {
+        params: {
+          api_token: this.user.api_token,
+          date: today
+        }
+      }).then(function (response) {
+        console.log(response);
+        _this.tasks = response.data;
       })["catch"](function (error) {
         return console.log(error);
       });
@@ -2026,11 +2025,23 @@ __webpack_require__.r(__webpack_exports__);
         }, 1000);
       }
     },
-    finish: function finish() {
+    cancel: function cancel() {
       this.newTask = false;
+    },
+    saved: function saved() {
+      this.newTask = false;
+      this.apiCallGetTask();
     }
   },
   created: function created() {
+    var today = new Date(Date.now());
+    var options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    };
+    this.dateTask = new Date(today.setDate(today.getDate() + this.todaydate)).toLocaleDateString('es-MX', options);
     this.countDownTimer();
     this.apiCallGetTask();
     this.restart = this.countDown;
@@ -2091,11 +2102,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'NewTask',
+  props: {
+    api_token: String,
+    fixedDate: Date
+  },
   data: function data() {
     return {
       minutes: "0",
       seconds: "0",
-      time: "30"
+      time: "30",
+      title: "",
+      description: ""
     };
   },
   computed: {
@@ -2109,11 +2126,38 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       return this.time;
+    },
+    secondsValidated: function secondsValidated() {
+      if (this.time == '0') {
+        return this.seconds;
+      }
+
+      return "0";
     }
   },
   methods: {
-    emit: function emit() {
-      this.$emit('finish');
+    cancel: function cancel() {
+      this.$emit('cancel');
+    },
+    save: function save() {
+      if (this.title != '') {
+        axios.post('/api/tasks?api_token=' + this.api_token, {
+          params: {
+            title: this.title,
+            description: this.description,
+            minutes: this.minutesValidated,
+            seconds: this.secondsValidated,
+            date: this.fixedDate
+          }
+        }).then(function (response) {
+          return console.log(response);
+        })["catch"](function (error) {
+          return console.log(error);
+        });
+        this.$emit('saved');
+      } else {
+        alert('El campo de titulo es obligatorio');
+      }
     }
   }
 });
@@ -2151,8 +2195,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'TaskComponent',
   props: {
-    title: String,
-    description: String
+    task: Object
   },
   data: function data() {
     return {
@@ -37826,7 +37869,7 @@ var render = function() {
               _c("div", { staticClass: "col-12 col-md-6" }, [
                 _vm._v(
                   "\n                           " +
-                    _vm._s(_vm.datetask) +
+                    _vm._s(_vm.dateTask) +
                     "\n                       "
                 )
               ]),
@@ -37931,19 +37974,31 @@ var render = function() {
             "div",
             { staticClass: "card-body" },
             [
-              _c("task-component"),
+              _vm._l(_vm.tasks.tasks, function(task) {
+                return _c("task-component", {
+                  key: task.id,
+                  attrs: { task: task }
+                })
+              }),
               _vm._v(" "),
               _vm.newTask
                 ? _c("new-task-component", {
+                    attrs: {
+                      fixedDate: _vm.fixedDate,
+                      api_token: _vm.user.api_token
+                    },
                     on: {
-                      finish: function($event) {
-                        return _vm.finish()
+                      cancel: function($event) {
+                        return _vm.cancel()
+                      },
+                      saved: function($event) {
+                        return _vm.saved()
                       }
                     }
                   })
                 : _vm._e()
             ],
-            1
+            2
           )
         ])
       ]),
@@ -38013,7 +38068,59 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "row border-bottom mb-3" }, [
-    _vm._m(0),
+    _c("div", { staticClass: "col-6 col-md-8" }, [
+      _c("div", { staticClass: "form-group" }, [
+        _c("label", { attrs: { for: "title" } }, [_vm._v("Titulo")]),
+        _vm._v(" "),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.title,
+              expression: "title"
+            }
+          ],
+          staticClass: "form-control",
+          attrs: { type: "text", autofocus: "" },
+          domProps: { value: _vm.title },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.title = $event.target.value
+            }
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "form-group" }, [
+        _c("label", { attrs: { for: "description" } }, [_vm._v("Descripción")]),
+        _vm._v(" "),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.description,
+              expression: "description"
+            }
+          ],
+          staticClass: "form-control",
+          attrs: { type: "text" },
+          domProps: { value: _vm.description },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.description = $event.target.value
+            }
+          }
+        })
+      ])
+    ]),
     _vm._v(" "),
     _c("div", { staticClass: "col-6 col-md-4 text-right" }, [
       _c("div", { staticClass: "form-group" }, [
@@ -38102,7 +38209,7 @@ var render = function() {
                 }
               ],
               staticClass: "form-control-range",
-              attrs: { type: "range", min: "0", max: "60" },
+              attrs: { type: "range", min: "0", max: "59" },
               domProps: { value: _vm.seconds },
               on: {
                 __r: function($event) {
@@ -38130,7 +38237,7 @@ var render = function() {
                 attrs: { type: "button" },
                 on: {
                   click: function($event) {
-                    return _vm.emit()
+                    return _vm.cancel()
                   }
                 }
               },
@@ -38139,7 +38246,15 @@ var render = function() {
             _vm._v(" "),
             _c(
               "button",
-              { staticClass: "btn btn-primary", attrs: { type: "button" } },
+              {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.save()
+                  }
+                }
+              },
               [_vm._v("Guardar")]
             )
           ]
@@ -38148,26 +38263,7 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-6 col-md-8" }, [
-      _c("div", { staticClass: "form-group" }, [
-        _c("label", { attrs: { for: "title" } }, [_vm._v("Titulo")]),
-        _vm._v(" "),
-        _c("input", { staticClass: "form-control", attrs: { type: "text" } })
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-group" }, [
-        _c("label", { attrs: { for: "description" } }, [_vm._v("Descripción")]),
-        _vm._v(" "),
-        _c("input", { staticClass: "form-control", attrs: { type: "text" } })
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -38189,51 +38285,48 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "row border-bottom mb-3" }, [
+    _c("div", { staticClass: "col-6 col-md-8" }, [
+      _c("b", [_vm._v(_vm._s(_vm.task.title))]),
+      _vm._v(" "),
+      _c("p", [_vm._v(_vm._s(_vm.task.description))])
+    ]),
+    _vm._v(" "),
+    _vm._m(0)
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row border-bottom mb-3" }, [
-      _c("div", { staticClass: "col-6 col-md-8" }, [
-        _c("b", [_vm._v("Diseño web (Draco Studios)")]),
-        _vm._v(" "),
-        _c("p", [_vm._v("Trabajar mucho")])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-6 col-md-4 text-right" }, [
-        _c(
-          "div",
-          {
-            staticClass: "btn-group",
-            attrs: { role: "group", "aria-label": "Basic example" }
-          },
-          [
-            _c(
-              "button",
-              { staticClass: "btn btn-light", attrs: { type: "button" } },
-              [_vm._v("\n                00:24\n            ")]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-light border",
-                attrs: { type: "button" }
-              },
-              [
-                _c("img", {
-                  attrs: {
-                    src: "https://img.icons8.com/small/15/000000/edit.png"
-                  }
-                })
-              ]
-            )
-          ]
-        )
-      ])
+    return _c("div", { staticClass: "col-6 col-md-4 text-right" }, [
+      _c(
+        "div",
+        {
+          staticClass: "btn-group",
+          attrs: { role: "group", "aria-label": "Basic example" }
+        },
+        [
+          _c(
+            "button",
+            { staticClass: "btn btn-light", attrs: { type: "button" } },
+            [_vm._v("\n                00:24\n            ")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            { staticClass: "btn btn-light border", attrs: { type: "button" } },
+            [
+              _c("img", {
+                attrs: {
+                  src: "https://img.icons8.com/small/15/000000/edit.png"
+                }
+              })
+            ]
+          )
+        ]
+      )
     ])
   }
 ]
