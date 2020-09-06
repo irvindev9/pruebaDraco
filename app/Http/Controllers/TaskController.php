@@ -88,7 +88,14 @@ class TaskController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $task = Task::find($id);
+            $task->title = $request['params']['title'];
+            $task->description = $request['params']['description'];
+            $task->minutes = $request['params']['minutes'];
+            $task->seconds = $request['params']['seconds'];
+        $task->save();
+
+        return response("Success");
     }
 
     /**
@@ -99,6 +106,8 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Task::destroy($id);
+
+        return response("Success");
     }
 }

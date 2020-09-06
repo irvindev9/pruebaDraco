@@ -1971,6 +1971,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     todaydate: Number,
@@ -1979,6 +1991,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       countDown: 10,
+      loading: true,
       timer: '00:00:00',
       restart: 0,
       pause: false,
@@ -1993,20 +2006,24 @@ __webpack_require__.r(__webpack_exports__);
     apiCallGetTask: function apiCallGetTask() {
       var _this = this;
 
+      this.loading = true;
       var today = new Date();
       today.setDate(today.getDate() + this.todaydate);
       this.fixedDate = today;
-      axios.get('/api/tasks', {
-        params: {
-          api_token: this.user.api_token,
-          date: today
-        }
-      }).then(function (response) {
-        console.log(response);
-        _this.tasks = response.data;
-      })["catch"](function (error) {
-        return console.log(error);
-      });
+      setTimeout(function () {
+        axios.get('/api/tasks', {
+          params: {
+            api_token: _this.user.api_token,
+            date: today
+          }
+        }).then(function (response) {
+          console.log(response);
+          _this.tasks = response.data;
+        })["catch"](function (error) {
+          return console.log(error);
+        });
+        _this.loading = false;
+      }, 1000);
     },
     countDownTimer: function countDownTimer() {
       var _this2 = this;
@@ -2243,7 +2260,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'TaskComponent',
   props: {
-    task: Object
+    api_token: String,
+    task: Object,
+    fixedDate: Date
   },
   data: function data() {
     return {
@@ -2257,12 +2276,58 @@ __webpack_require__.r(__webpack_exports__);
       var date = new Date(0);
       date.setSeconds(seconds);
       return date.toISOString().substr(11, 8);
+    },
+    minutesValidated: function minutesValidated() {
+      if (this.minutesFixed == '0') {
+        if (this.task.seconds > 0 && this.task.minutes == 120) {
+          return "119";
+        }
+
+        return this.task.minutes;
+      }
+
+      return this.minutesFixed;
+    },
+    secondsValidated: function secondsValidated() {
+      if (this.minutesFixed == '0') {
+        return this.task.seconds;
+      }
+
+      return "0";
     }
   },
   methods: {
     cancel: function cancel() {
       this.edit = !this.edit;
       this.$emit('cancel');
+    },
+    save: function save() {
+      axios.patch('/api/tasks/' + this.task.id + '?api_token=' + this.api_token, {
+        params: {
+          title: this.task.title,
+          description: this.task.description,
+          minutes: this.minutesValidated,
+          seconds: this.secondsValidated,
+          date: this.fixedDate
+        }
+      }).then(function (response) {
+        return console.log(response);
+      })["catch"](function (error) {
+        return console.log(error);
+      });
+      this.edit = !this.edit;
+      this.$emit('saved');
+    },
+    destroy: function destroy() {
+      if (confirm("Esta acción no se puede deshacer. ¿Esta seguro?")) {
+        axios["delete"]('/api/tasks/' + this.task.id + '?api_token=' + this.api_token).then(function (response) {
+          return console.log(response);
+        })["catch"](function (error) {
+          return console.log(error);
+        });
+        this.edit = !this.edit;
+        this.$emit('saved');
+      }
     }
   },
   created: function created() {
@@ -38048,13 +38113,24 @@ var render = function() {
             "div",
             { staticClass: "card-body" },
             [
+              _vm.loading
+                ? _c("div", { staticClass: "row" }, [_vm._m(2)])
+                : _vm._e(),
+              _vm._v(" "),
               _vm._l(_vm.tasks.tasks, function(task) {
                 return _c("task-component", {
                   key: task.id,
-                  attrs: { task: task },
+                  attrs: {
+                    task: task,
+                    api_token: _vm.user.api_token,
+                    fixedDate: _vm.fixedDate
+                  },
                   on: {
                     cancel: function($event) {
                       return _vm.cancel()
+                    },
+                    saved: function($event) {
+                      return _vm.saved()
                     }
                   }
                 })
@@ -38078,11 +38154,17 @@ var render = function() {
                 : _vm._e()
             ],
             2
-          )
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-footer text-right" }, [
+            _vm._v(
+              "\n                    © Irvin Raúl López Contreras\n                "
+            )
+          ])
         ])
       ]),
       _vm._v(" "),
-      _vm._m(2)
+      _vm._m(3)
     ])
   ])
 }
@@ -38111,6 +38193,20 @@ var staticRenderFns = [
             "https://img.icons8.com/fluent-systems-filled/15/000000/statistics.png"
         }
       })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-12" }, [
+      _c("div", { staticClass: "text-center" }, [
+        _c(
+          "div",
+          { staticClass: "spinner-border", attrs: { role: "status" } },
+          [_c("span", { staticClass: "sr-only" }, [_vm._v("Loading...")])]
+        )
+      ])
     ])
   },
   function() {
@@ -38383,7 +38479,10 @@ var render = function() {
               [
                 _c(
                   "button",
-                  { staticClass: "btn btn-light", attrs: { type: "button" } },
+                  {
+                    staticClass: "btn btn-light border",
+                    attrs: { type: "button" }
+                  },
                   [
                     _vm._v(
                       "\n                    " +
@@ -38640,7 +38739,7 @@ var render = function() {
                       attrs: { type: "button" },
                       on: {
                         click: function($event) {
-                          return _vm.cancel()
+                          return _vm.destroy()
                         }
                       }
                     },

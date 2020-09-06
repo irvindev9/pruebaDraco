@@ -7,7 +7,7 @@
             </div>
             <div class="col-6 col-md-4 text-right">
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    <button type="button" class="btn btn-light">
+                    <button type="button" class="btn btn-light border">
                         {{time}}
                     </button>
                     <button type="button" class="btn btn-light border" @click="edit = !edit">
@@ -54,7 +54,7 @@
                 </div>
                 <div class="form-group">
                     <div class="form-group" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-danger border" @click="cancel()">
+                        <button type="button" class="btn btn-danger border" @click="destroy()">
                             <img src="https://img.icons8.com/small/16/FFFFFF/delete.png"/> Borrar
                         </button>
                     </div>
@@ -68,7 +68,9 @@
 export default {
     name: 'TaskComponent',
     props: {
-        task : Object
+        api_token : String,
+        task : Object,
+        fixedDate : Date,
     },
     data(){
         return {
@@ -82,6 +84,21 @@ export default {
             var date = new Date(0)
             date.setSeconds(seconds)
             return date.toISOString().substr(11, 8)
+        },
+        minutesValidated(){
+            if(this.minutesFixed == '0'){
+                if(this.task.seconds > 0 && this.task.minutes == 120){
+                    return "119";
+                }
+                return this.task.minutes;
+            }
+            return this.minutesFixed;
+        },
+        secondsValidated(){
+            if(this.minutesFixed == '0'){
+                return this.task.seconds;
+            }
+            return "0";
         }
     },
     methods:{
@@ -89,6 +106,42 @@ export default {
             this.edit = !this.edit
             this.$emit('cancel')
         },
+        save(){
+            axios
+                .patch('/api/tasks/' + this.task.id + '?api_token=' + this.api_token,{
+                    params: {
+                        title: this.task.title,
+                        description: this.task.description,
+                        minutes: this.minutesValidated,
+                        seconds: this.secondsValidated,
+                        date: this.fixedDate,
+                    }
+                })
+                .then(response => (
+                    console.log(response)
+                ))
+                .catch(error => 
+                    console.log(error)
+                )
+
+            this.edit = !this.edit
+            this.$emit('saved')
+        },
+        destroy(){
+            if(confirm("Esta acción no se puede deshacer. ¿Esta seguro?")){
+                axios
+                .delete('/api/tasks/' + this.task.id + '?api_token=' + this.api_token)
+                .then(response => (
+                    console.log(response)
+                ))
+                .catch(error => 
+                    console.log(error)
+                )
+
+                this.edit = !this.edit
+                this.$emit('saved')
+            }
+        }
     },
     created(){
         if(this.task.minutes == "30" && this.task.seconds == "0"){

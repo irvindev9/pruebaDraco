@@ -49,8 +49,20 @@
                        </div>
                     </div>
                     <div class="card-body">
-                        <task-component v-for="task in tasks.tasks" :key="task.id" :task="task" v-on:cancel="cancel()"/>
+                        <div v-if="loading" class="row">
+                            <div class="col-12">
+                                <div class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <task-component v-for="task in tasks.tasks" :key="task.id" :task="task" :api_token="user.api_token" :fixedDate="fixedDate" v-on:cancel="cancel()" v-on:saved="saved()"/>
                         <new-task-component :fixedDate="fixedDate" :api_token="user.api_token" v-on:cancel="cancel()" v-on:saved="saved()" v-if="newTask" />
+                    </div>
+                    <div class="card-footer text-right">
+                        © Irvin Raúl López Contreras
                     </div>
                 </div>
             </div>
@@ -70,6 +82,7 @@
         data() {
             return {
                 countDown : 10,
+                loading : true,
                 timer : '00:00:00',
                 restart : 0,
                 pause : false,
@@ -84,10 +97,12 @@
         },
         methods:{
             apiCallGetTask(){
+                this.loading = true
                 const today = new Date()
                 today.setDate(today.getDate() + this.todaydate);
                 this.fixedDate = today;
 
+                setTimeout(() => {
                 axios
                     .get('/api/tasks',{
                         params: {
@@ -102,6 +117,11 @@
                     .catch(error => 
                         console.log(error)
                     )
+
+                this.loading = false
+
+                }, 1000)
+                
             },
             countDownTimer() {
                 if(this.countDown > 0) {
