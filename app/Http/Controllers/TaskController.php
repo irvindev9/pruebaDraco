@@ -18,7 +18,7 @@ class TaskController extends Controller
         $date = explode('T',$request->date);
         $date = $date[0];
 
-        $dateTask = DateTask::with(['tasks'])->firstOrCreate(array('user_id' => $request->user()->id, 'date_task' => $date));
+        $dateTask = DateTask::with(['tasks'])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
 
         return response($dateTask);
     }

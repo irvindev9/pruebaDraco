@@ -2199,8 +2199,18 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      edit: false
+      edit: false,
+      timer: ''
     };
+  },
+  computed: {
+    time: function time() {
+      var seconds = parseInt(this.task.minutes * 60) + parseInt(this.task.seconds);
+      console.log(seconds);
+      var date = new Date(0);
+      date.setSeconds(seconds);
+      return date.toISOString().substr(11, 8);
+    }
   }
 });
 
@@ -38292,15 +38302,7 @@ var render = function() {
       _c("p", [_vm._v(_vm._s(_vm.task.description))])
     ]),
     _vm._v(" "),
-    _vm._m(0)
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-6 col-md-4 text-right" }, [
+    _c("div", { staticClass: "col-6 col-md-4 text-right" }, [
       _c(
         "div",
         {
@@ -38311,23 +38313,29 @@ var staticRenderFns = [
           _c(
             "button",
             { staticClass: "btn btn-light", attrs: { type: "button" } },
-            [_vm._v("\n                00:24\n            ")]
+            [_vm._v("\n                " + _vm._s(_vm.time) + "\n            ")]
           ),
           _vm._v(" "),
-          _c(
-            "button",
-            { staticClass: "btn btn-light border", attrs: { type: "button" } },
-            [
-              _c("img", {
-                attrs: {
-                  src: "https://img.icons8.com/small/15/000000/edit.png"
-                }
-              })
-            ]
-          )
+          _vm._m(0)
         ]
       )
     ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      { staticClass: "btn btn-light border", attrs: { type: "button" } },
+      [
+        _c("img", {
+          attrs: { src: "https://img.icons8.com/small/15/000000/edit.png" }
+        })
+      ]
+    )
   }
 ]
 render._withStripped = true
