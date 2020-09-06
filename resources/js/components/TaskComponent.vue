@@ -21,7 +21,13 @@
 export default {
     name: 'TaskComponent',
     props: {
-
+        title : String,
+        description: String
+    },
+    data(){
+        return {
+            edit : false
+        }
     }
 }
 </script>

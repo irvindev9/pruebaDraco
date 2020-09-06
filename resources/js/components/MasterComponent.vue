@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-md-5 my-1">
-                <a class="btn btn-light px-2 border">
+                <a class="btn btn-light px-2 border" @click="newTask = true">
                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/plus-math.png"/> Agregar tarea
                 </a>
             </div>
@@ -39,7 +39,7 @@
                                <button title="Reiniciar" class="btn btn-light" @click="countDown = restart">
                                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/rewind-button-round.png"/>
                                 </button>
-                                <button title="Detener" class="btn btn-light">
+                                <button title="Detener" class="btn btn-light" @click="countDown = 1;countDownTimer()">
                                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/stop-circled.png"/>
                                 </button>
                                 <div class="btn btn-light border">
@@ -50,6 +50,7 @@
                     </div>
                     <div class="card-body">
                         <task-component />
+                        <new-task-component v-on:finish="finish()" v-if="newTask" />
                     </div>
                 </div>
             </div>
@@ -71,6 +72,7 @@
                 timer : '00:00:00',
                 restart : 0,
                 pause : false,
+                newTask : false
             }
         },
         computed:{
@@ -95,6 +97,9 @@
                         this.countDownTimer()
                     }, 1000)
                 }
+            },
+            finish() {
+                this.newTask = false;
             }
         },
         created(){
