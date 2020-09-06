@@ -72,7 +72,9 @@
                 timer : '00:00:00',
                 restart : 0,
                 pause : false,
-                newTask : false
+                newTask : false,
+                dateTask : '',
+                tasks : Object
             }
         },
         computed:{
@@ -85,6 +87,16 @@
             }
         },
         methods:{
+            apiCallGetTask(){
+                axios
+                    .get('/api/tasks')
+                    .then(response => (
+                        this.tasks = response.data
+                    ))
+                    .catch(error => 
+                        console.log(error)
+                    )
+            },
             countDownTimer() {
                 if(this.countDown > 0) {
                     setTimeout(() => {
@@ -104,6 +116,7 @@
         },
         created(){
             this.countDownTimer()
+            this.apiCallGetTask()
             this.restart = this.countDown
         }
     }

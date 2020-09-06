@@ -1981,7 +1981,9 @@ __webpack_require__.r(__webpack_exports__);
       timer: '00:00:00',
       restart: 0,
       pause: false,
-      newTask: false
+      newTask: false,
+      dateTask: '',
+      tasks: Object
     };
   },
   computed: {
@@ -1998,20 +2000,29 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    countDownTimer: function countDownTimer() {
+    apiCallGetTask: function apiCallGetTask() {
       var _this = this;
+
+      axios.get('/api/tasks').then(function (response) {
+        return _this.tasks = response.data;
+      })["catch"](function (error) {
+        return console.log(error);
+      });
+    },
+    countDownTimer: function countDownTimer() {
+      var _this2 = this;
 
       if (this.countDown > 0) {
         setTimeout(function () {
-          if (!_this.pause) {
-            _this.countDown -= 1;
+          if (!_this2.pause) {
+            _this2.countDown -= 1;
           }
 
           var date = new Date(0);
-          date.setSeconds(_this.countDown);
-          _this.timer = date.toISOString().substr(11, 8);
+          date.setSeconds(_this2.countDown);
+          _this2.timer = date.toISOString().substr(11, 8);
 
-          _this.countDownTimer();
+          _this2.countDownTimer();
         }, 1000);
       }
     },
@@ -2021,6 +2032,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     this.countDownTimer();
+    this.apiCallGetTask();
     this.restart = this.countDown;
   }
 });
