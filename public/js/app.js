@@ -2257,6 +2257,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'TaskComponent',
   props: {
@@ -2328,6 +2338,28 @@ __webpack_require__.r(__webpack_exports__);
         this.edit = !this.edit;
         this.$emit('saved');
       }
+    },
+    orderUp: function orderUp() {
+      axios.patch('/api/tasks/up/' + this.task.id + '?api_token=' + this.api_token, {
+        params: {
+          date: this.fixedDate
+        }
+      }).then(function (response) {
+        return console.log(response);
+      })["catch"](function (error) {
+        return console.log(error);
+      });
+    },
+    orderDown: function orderDown() {
+      axios.patch('/api/tasks/down/' + this.task.id + '?api_token=' + this.api_token, {
+        params: {
+          date: this.fixedDate
+        }
+      }).then(function (response) {
+        return console.log(response);
+      })["catch"](function (error) {
+        return console.log(error);
+      });
     }
   },
   created: function created() {
@@ -38463,17 +38495,70 @@ var render = function() {
   return _c("div", [
     !_vm.edit
       ? _c("div", { staticClass: "row border-bottom mb-3" }, [
-          _c("div", { staticClass: "col-6 col-md-8" }, [
+          _c("div", { staticClass: "col-2 col-md-1" }, [
+            _c(
+              "div",
+              {
+                staticClass: "btn-group-vertical",
+                attrs: { role: "group", "aria-label": "Basic example" }
+              },
+              [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-light btn-sm border",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        return _vm.orderUp()
+                      }
+                    }
+                  },
+                  [
+                    _c("img", {
+                      attrs: {
+                        src:
+                          "https://img.icons8.com/small/16/000000/up-squared.png"
+                      }
+                    })
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-light btn-sm border",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        return _vm.orderDown()
+                      }
+                    }
+                  },
+                  [
+                    _c("img", {
+                      attrs: {
+                        src:
+                          "https://img.icons8.com/small/16/000000/down-squared.png"
+                      }
+                    })
+                  ]
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-10 col-md-7" }, [
             _c("b", [_vm._v(_vm._s(_vm.task.title))]),
             _vm._v(" "),
             _c("p", [_vm._v(_vm._s(_vm.task.description))])
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "col-6 col-md-4 text-right" }, [
+          _c("div", { staticClass: "col-12 col-md-4 text-right" }, [
             _c(
               "div",
               {
-                staticClass: "btn-group",
+                staticClass: "btn-group mb-1",
                 attrs: { role: "group", "aria-label": "Basic example" }
               },
               [
@@ -38696,7 +38781,7 @@ var render = function() {
                   _c(
                     "button",
                     {
-                      staticClass: "btn btn-light border",
+                      staticClass: "btn btn-light border btn-sm",
                       attrs: { type: "button" },
                       on: {
                         click: function($event) {
@@ -38710,7 +38795,7 @@ var render = function() {
                   _c(
                     "button",
                     {
-                      staticClass: "btn btn-primary",
+                      staticClass: "btn btn-primary btn-sm",
                       attrs: { type: "button" },
                       on: {
                         click: function($event) {
@@ -38735,7 +38820,7 @@ var render = function() {
                   _c(
                     "button",
                     {
-                      staticClass: "btn btn-danger border",
+                      staticClass: "btn btn-danger btn-sm",
                       attrs: { type: "button" },
                       on: {
                         click: function($event) {

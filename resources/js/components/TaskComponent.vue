@@ -1,12 +1,22 @@
 <template>
     <div>
         <div v-if="!edit" class="row border-bottom mb-3">
-            <div class="col-6 col-md-8">
+            <div class="col-2 col-md-1">
+                <div class="btn-group-vertical" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-light btn-sm border" @click="orderUp()">
+                        <img src="https://img.icons8.com/small/16/000000/up-squared.png"/>
+                    </button>
+                    <button type="button" class="btn btn-light btn-sm border" @click="orderDown()">
+                        <img src="https://img.icons8.com/small/16/000000/down-squared.png"/>
+                    </button>
+                </div>
+            </div>
+            <div class="col-10 col-md-7">
                 <b>{{task.title}}</b>
                 <p>{{task.description}}</p>
             </div>
-            <div class="col-6 col-md-4 text-right">
-                <div class="btn-group" role="group" aria-label="Basic example">
+            <div class="col-12 col-md-4 text-right">
+                <div class="btn-group mb-1" role="group" aria-label="Basic example">
                     <button type="button" class="btn btn-light border">
                         {{time}}
                     </button>
@@ -48,13 +58,13 @@
                 <div class="form-group">
                     <label for="margin">&nbsp;</label>
                     <div class="form-group" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-light border" @click="cancel()">Cancelar</button>
-                        <button type="button" class="btn btn-primary" @click="save()">Guardar</button>
+                        <button type="button" class="btn btn-light border btn-sm" @click="cancel()">Cancelar</button>
+                        <button type="button" class="btn btn-primary btn-sm" @click="save()">Guardar</button>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="form-group" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-danger border" @click="destroy()">
+                        <button type="button" class="btn btn-danger btn-sm" @click="destroy()">
                             <img src="https://img.icons8.com/small/16/FFFFFF/delete.png"/> Borrar
                         </button>
                     </div>
@@ -129,18 +139,43 @@ export default {
         },
         destroy(){
             if(confirm("Esta acción no se puede deshacer. ¿Esta seguro?")){
-                axios
-                .delete('/api/tasks/' + this.task.id + '?api_token=' + this.api_token)
+                axios.delete('/api/tasks/' + this.task.id + '?api_token=' + this.api_token)
+                    .then(response => (
+                        console.log(response)
+                    ))
+                    .catch(error => 
+                        console.log(error)
+                    )
+
+                this.edit = !this.edit
+                this.$emit('saved')
+            }
+        },
+        orderUp(){
+            axios.patch('/api/tasks/up/' + this.task.id + '?api_token=' + this.api_token,{
+                params : {
+                    date : this.fixedDate
+                }
+            })
                 .then(response => (
                     console.log(response)
                 ))
                 .catch(error => 
                     console.log(error)
                 )
-
-                this.edit = !this.edit
-                this.$emit('saved')
-            }
+        },
+        orderDown(){
+            axios.patch('/api/tasks/down/' + this.task.id + '?api_token=' + this.api_token,{
+                params : {
+                    date : this.fixedDate
+                }
+            })
+                .then(response => (
+                    console.log(response)
+                ))
+                .catch(error => 
+                    console.log(error)
+                )
         }
     },
     created(){

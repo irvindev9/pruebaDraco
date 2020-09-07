@@ -44,7 +44,9 @@ class TaskController extends Controller
         $date = explode('T',$request['params']['date']);
         $date = $date[0];
 
-        $dateTask = DateTask::firstOrCreate(array('user_id' => $request->user()->id, 'date_task' => $date));  
+        $dateTask = DateTask::firstOrCreate(array('user_id' => $request->user()->id, 'date_task' => $date)); 
+        
+        $lastTask = Task::where('date_id',$dateTask->id)->orderBy('order','desc')->first();
         
         $task = new Task();
             $task->date_id = $dateTask->id;
@@ -52,31 +54,56 @@ class TaskController extends Controller
             $task->description = $request['params']['description'];
             $task->minutes = $request['params']['minutes'];
             $task->seconds = $request['params']['seconds'];
+            $task->order = isset($lastTask->order) ? $lastTask->order + 1 : 1;
         $task->save();
 
         return response("Success");
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+
+    public function orderUp(Request $request, $id)
     {
-        //
+        $date = explode('T',$request['params']['date']);
+        $date = $date[0];
+
+        $dateTask = DateTask::with(['tasks'])->where('user_id',$request->user()->id)->where('date_task', $date)->first()->toArray();
+
+        $upLevel = null;
+
+        foreach($dateTask['tasks'] as $key => $task){
+            if($task['id'] == $id){
+                $upLevel = $key;
+            }
+        }
+
+        if(isset($dateTask['tasks'][$upLevel - 1])){
+            dd('Hacer el cambio de $upLevel y $upLevel -1');
+        }
+
+        return response([$request->all(), $id]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+
+    public function orderDown(Request $request, $id)
     {
-        //
+        $date = explode('T',$request['params']['date']);
+        $date = $date[0];
+
+        $dateTask = DateTask::with(['tasks'])->where('user_id',$request->user()->id)->where('date_task', $date)->first()->toArray();
+
+        $upLevel = null;
+
+        foreach($dateTask['tasks'] as $key => $task){
+            if($task['id'] == $id){
+                $upLevel = $key;
+            }
+        }
+
+        if(isset($dateTask['tasks'][$upLevel + 1])){
+            dd('Hacer el cambio de $upLevel y $upLevel + 1');
+        }
+
+        return response([$request->all(), $id]);
     }
 
     /**

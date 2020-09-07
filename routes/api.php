@@ -14,18 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-// Route::get('/tasks', function(){
-//     return response([
-//         'data' => 'Data',
-//         'name' => 'name'
-//     ]);
-// });
-
+//Task Resources
 Route::middleware('auth:api')->get('tasks', 'TaskController@index');
 Route::middleware('auth:api')->post('tasks', 'TaskController@store');
 Route::middleware('auth:api')->patch('tasks/{id}', 'TaskController@update');
 Route::middleware('auth:api')->delete('tasks/{id}', 'TaskController@destroy');
+
+//Switch task order
+Route::middleware('auth:api')->patch('tasks/up/{id}', 'TaskController@orderUp');
+Route::middleware('auth:api')->patch('tasks/down/{id}', 'TaskController@orderDown');
