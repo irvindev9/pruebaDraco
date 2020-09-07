@@ -18,7 +18,9 @@ class TaskController extends Controller
         $date = explode('T',$request->date);
         $date = $date[0];
 
-        $dateTask = DateTask::with(['tasks'])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
+        $dateTask = DateTask::with(['tasks' => function($q){
+            $q->where('completed',0);
+        }])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
 
         return response($dateTask);
     }
@@ -33,7 +35,9 @@ class TaskController extends Controller
         $date = explode('T',$request->date);
         $date = $date[0];
 
-        $dateTask = DateTask::with(['task'])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
+        $dateTask = DateTask::with(['task' => function($q){
+            $q->where('completed',0);
+        }])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
 
         return response($dateTask);
     }

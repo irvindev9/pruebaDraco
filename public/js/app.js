@@ -2014,12 +2014,17 @@ __webpack_require__.r(__webpack_exports__);
       loading: true,
       timer: '00:00:00',
       restart: 0,
-      pause: false,
+      pause: true,
       newTask: false,
       dateTask: '',
       tasks: Object,
       fixedDate: '',
-      currentTask: Object
+      currentTask: {
+        task: {
+          title: ''
+        }
+      },
+      running: false
     };
   },
   computed: {},
@@ -2052,6 +2057,7 @@ __webpack_require__.r(__webpack_exports__);
       if (this.countDown > 0) {
         setTimeout(function () {
           if (!_this2.pause) {
+            _this2.running = true;
             _this2.countDown -= 1;
           }
 
@@ -2062,6 +2068,14 @@ __webpack_require__.r(__webpack_exports__);
           _this2.countDownTimer();
         }, 1000);
       }
+    },
+    resetTimer: function resetTimer() {
+      this.running = false;
+      this.countDown = this.restart;
+      this.pause = true;
+      var date = new Date(0);
+      date.setSeconds(this.countDown);
+      this.timer = date.toISOString().substr(11, 8);
     },
     cancel: function cancel() {
       this.newTask = false;
@@ -2085,6 +2099,11 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         console.log(response);
         _this3.currentTask = response.data;
+        var seconds = parseInt(response.data.task.minutes * 60) + parseInt(response.data.task.seconds);
+        _this3.countDown = seconds;
+        _this3.restart = seconds;
+
+        _this3.resetTimer();
       })["catch"](function (error) {
         return console.log(error);
       });
@@ -2098,8 +2117,8 @@ __webpack_require__.r(__webpack_exports__);
       month: 'long',
       day: 'numeric'
     };
-    this.dateTask = new Date(today.setDate(today.getDate() + this.todaydate)).toLocaleDateString('es-MX', options);
-    this.countDownTimer();
+    this.dateTask = new Date(today.setDate(today.getDate() + this.todaydate)).toLocaleDateString('es-MX', options); // this.countDownTimer()
+
     this.apiCallGetTask();
     this.restart = this.countDown;
     this.currentTaskCall();
@@ -38095,8 +38114,7 @@ var render = function() {
                     attrs: { title: "Iniciar" },
                     on: {
                       click: function($event) {
-                        _vm.countDown = 10
-                        _vm.countDownTimer()
+                        _vm.pause = false
                       }
                     }
                   },
@@ -38117,7 +38135,7 @@ var render = function() {
                     attrs: { title: "Pausar" },
                     on: {
                       click: function($event) {
-                        _vm.pause = !_vm.pause
+                        _vm.pause = true
                       }
                     }
                   },
@@ -38159,8 +38177,7 @@ var render = function() {
                     attrs: { title: "Detener" },
                     on: {
                       click: function($event) {
-                        _vm.countDown = 1
-                        _vm.countDownTimer()
+                        return _vm.resetTimer()
                       }
                     }
                   },
@@ -38194,7 +38211,61 @@ var render = function() {
                 )
               ]),
               _vm._v(" "),
-              _vm._m(2)
+              _c("div", { staticClass: "col-4" }, [
+                _c(
+                  "div",
+                  {
+                    staticClass: "btn-group",
+                    attrs: { role: "group", "aria-label": "Basic example" }
+                  },
+                  [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-light border btn-sm",
+                        on: {
+                          click: function($event) {
+                            _vm.countDownTimer()
+                            _vm.pause = false
+                          }
+                        }
+                      },
+                      [
+                        _c("img", {
+                          attrs: {
+                            src:
+                              "https://img.icons8.com/small/15/000000/play.png"
+                          }
+                        }),
+                        _vm._v(" Iniciar\n                                ")
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _vm._m(2),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-light border btn-sm",
+                        on: {
+                          click: function($event) {
+                            return _vm.resetTimer()
+                          }
+                        }
+                      },
+                      [
+                        _c("img", {
+                          attrs: {
+                            src:
+                              "https://img.icons8.com/small/15/000000/delete-sign.png"
+                          }
+                        }),
+                        _vm._v(" Cancelar\n                                ")
+                      ]
+                    )
+                  ]
+                )
+              ])
             ])
           ]),
           _vm._v(" "),
@@ -38288,40 +38359,13 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-4" }, [
-      _c(
-        "div",
-        {
-          staticClass: "btn-group",
-          attrs: { role: "group", "aria-label": "Basic example" }
-        },
-        [
-          _c("button", { staticClass: "btn btn-light border btn-sm" }, [
-            _c("img", {
-              attrs: { src: "https://img.icons8.com/small/15/000000/play.png" }
-            }),
-            _vm._v(" Iniciar\n                                ")
-          ]),
-          _vm._v(" "),
-          _c("button", { staticClass: "btn btn-light border btn-sm" }, [
-            _c("img", {
-              attrs: {
-                src: "https://img.icons8.com/small/15/000000/checked-2--v1.png"
-              }
-            }),
-            _vm._v(" Terminar\n                                ")
-          ]),
-          _vm._v(" "),
-          _c("button", { staticClass: "btn btn-light border btn-sm" }, [
-            _c("img", {
-              attrs: {
-                src: "https://img.icons8.com/small/15/000000/delete-sign.png"
-              }
-            }),
-            _vm._v(" Cancelar\n                                ")
-          ])
-        ]
-      )
+    return _c("button", { staticClass: "btn btn-light border btn-sm" }, [
+      _c("img", {
+        attrs: {
+          src: "https://img.icons8.com/small/15/000000/checked-2--v1.png"
+        }
+      }),
+      _vm._v(" Terminar\n                                ")
     ])
   },
   function() {

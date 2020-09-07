@@ -30,16 +30,16 @@
                                {{dateTask}}
                            </div>
                            <div class="col-12 col-md-6 text-right">
-                               <button title="Iniciar" class="btn btn-light" @click="countDown = 10;countDownTimer()">
+                               <button title="Iniciar" class="btn btn-light" @click="pause = false">
                                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/circled-play.png"/>
                                 </button>
-                               <button title="Pausar" class="btn btn-light" @click="pause = !pause">
+                               <button title="Pausar" class="btn btn-light" @click="pause = true">
                                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/circled-pause.png"/>
                                 </button>
                                <button title="Reiniciar" class="btn btn-light" @click="countDown = restart">
                                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/rewind-button-round.png"/>
                                 </button>
-                                <button title="Detener" class="btn btn-light" @click="countDown = 1;countDownTimer()">
+                                <button title="Detener" class="btn btn-light" @click="resetTimer()">
                                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/stop-circled.png"/>
                                 </button>
                                 <div class="btn btn-light border">
@@ -55,13 +55,13 @@
                             </div>
                             <div class="col-4">
                                 <div class="btn-group" role="group" aria-label="Basic example">
-                                    <button class="btn btn-light border btn-sm">
+                                    <button class="btn btn-light border btn-sm" @click="countDownTimer();pause = false;">
                                         <img src="https://img.icons8.com/small/15/000000/play.png"/> Iniciar
                                     </button>
                                     <button class="btn btn-light border btn-sm">
                                         <img src="https://img.icons8.com/small/15/000000/checked-2--v1.png"/> Terminar
                                     </button>
-                                    <button class="btn btn-light border btn-sm">
+                                    <button class="btn btn-light border btn-sm" @click="resetTimer()">
                                         <img src="https://img.icons8.com/small/15/000000/delete-sign.png"/> Cancelar
                                     </button>
                                 </div>
@@ -105,16 +105,17 @@
                 loading : true,
                 timer : '00:00:00',
                 restart : 0,
-                pause : false,
+                pause : true,
                 newTask : false,
                 dateTask : '',
                 tasks : Object,
                 fixedDate : '',
-                currentTask : Object
+                currentTask : {task : {title : ''}}, 
+                running : false
             }
         },
         computed:{
-
+            
         },
         methods:{
             apiCallGetTask(){
@@ -147,6 +148,7 @@
                 if(this.countDown > 0) {
                     setTimeout(() => {
                         if(!this.pause){
+                            this.running = true
                             this.countDown -= 1
                         }
                         var date = new Date(0)
@@ -155,6 +157,14 @@
                         this.countDownTimer()
                     }, 1000)
                 }
+            },
+            resetTimer(){
+                this.running = false
+                this.countDown = this.restart
+                this.pause = true
+                var date = new Date(0)
+                date.setSeconds(this.countDown)
+                this.timer = date.toISOString().substr(11, 8)
             },
             cancel() {
                 this.newTask = false
@@ -179,6 +189,10 @@
                     .then(response => {
                         console.log(response)
                         this.currentTask = response.data
+                        let seconds = parseInt(response.data.task.minutes * 60) + parseInt(response.data.task.seconds);
+                        this.countDown = seconds;
+                        this.restart = seconds;
+                        this.resetTimer()
                     })
                     .catch(error => 
                         console.log(error)
@@ -190,7 +204,7 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
             this.dateTask = new Date(today.setDate(today.getDate() + this.todaydate)).toLocaleDateString('es-MX', options)
             
-            this.countDownTimer()
+            // this.countDownTimer()
             this.apiCallGetTask()
             this.restart = this.countDown
             this.currentTaskCall()
