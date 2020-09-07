@@ -15,4 +15,8 @@ class DateTask extends Model
     public function tasks(){
         return $this->hasMany(Task::class,'date_id')->orderBy('order');
     }
+
+    public function task(){
+        return $this->hasOne(Task::class,'date_id')->orderBy('order');
+    }
 }

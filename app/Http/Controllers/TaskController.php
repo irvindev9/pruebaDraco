@@ -28,9 +28,14 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function currentTask(Request $request)
     {
-        //
+        $date = explode('T',$request->date);
+        $date = $date[0];
+
+        $dateTask = DateTask::with(['task'])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
+
+        return response($dateTask);
     }
 
     /**
@@ -77,7 +82,17 @@ class TaskController extends Controller
         }
 
         if(isset($dateTask['tasks'][$upLevel - 1])){
-            dd('Hacer el cambio de $upLevel y $upLevel -1');
+            $task1 = Task::find($dateTask['tasks'][$upLevel]['id']);
+            $task2 = Task::find($dateTask['tasks'][$upLevel - 1]['id']);
+
+            $order1 = $task1->order;
+            $order2 = $task2->order;
+
+            $task1->order = $order2;
+            $task2->order = $order1;
+
+            $task1->save();
+            $task2->save();
         }
 
         return response([$request->all(), $id]);
@@ -100,7 +115,17 @@ class TaskController extends Controller
         }
 
         if(isset($dateTask['tasks'][$upLevel + 1])){
-            dd('Hacer el cambio de $upLevel y $upLevel + 1');
+            $task1 = Task::find($dateTask['tasks'][$upLevel]['id']);
+            $task2 = Task::find($dateTask['tasks'][$upLevel + 1]['id']);
+
+            $order1 = $task1->order;
+            $order2 = $task2->order;
+
+            $task1->order = $order2;
+            $task2->order = $order1;
+
+            $task1->save();
+            $task2->save();
         }
 
         return response([$request->all(), $id]);

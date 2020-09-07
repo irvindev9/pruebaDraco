@@ -48,6 +48,26 @@
                            </div>
                        </div>
                     </div>
+                    <div class="card-header">
+                        <div class="row justify-content-center">
+                            <div class="col-7">
+                                <b>Tarea en curso:</b> {{currentTask.task.title}}
+                            </div>
+                            <div class="col-4">
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    <button class="btn btn-light border btn-sm">
+                                        <img src="https://img.icons8.com/small/15/000000/play.png"/> Iniciar
+                                    </button>
+                                    <button class="btn btn-light border btn-sm">
+                                        <img src="https://img.icons8.com/small/15/000000/checked-2--v1.png"/> Terminar
+                                    </button>
+                                    <button class="btn btn-light border btn-sm">
+                                        <img src="https://img.icons8.com/small/15/000000/delete-sign.png"/> Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card-body">
                         <div v-if="loading" class="row">
                             <div class="col-12">
@@ -89,7 +109,8 @@
                 newTask : false,
                 dateTask : '',
                 tasks : Object,
-                fixedDate : ''
+                fixedDate : '',
+                currentTask : Object
             }
         },
         computed:{
@@ -98,13 +119,12 @@
         methods:{
             apiCallGetTask(){
                 this.loading = true
-                const today = new Date()
+                let today = new Date()
                 today.setDate(today.getDate() + this.todaydate);
                 this.fixedDate = today;
 
                 setTimeout(() => {
-                axios
-                    .get('/api/tasks',{
+                axios.get('/api/tasks',{
                         params: {
                             api_token: this.user.api_token,
                             date: today
@@ -144,16 +164,36 @@
             saved() {
                 this.newTask = false
                 this.apiCallGetTask()
+            },
+            currentTaskCall(){
+                let today = new Date()
+                today.setDate(today.getDate() + this.todaydate);
+                this.fixedDate = today;
+
+                axios.get('/api/tasks/current',{
+                        params: {
+                            api_token: this.user.api_token,
+                            date: today
+                        }
+                    })
+                    .then(response => {
+                        console.log(response)
+                        this.currentTask = response.data
+                    })
+                    .catch(error => 
+                        console.log(error)
+                    )
             }
         },
         created(){
-            const today = new Date(Date.now())
+            let today = new Date(Date.now())
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
             this.dateTask = new Date(today.setDate(today.getDate() + this.todaydate)).toLocaleDateString('es-MX', options)
             
             this.countDownTimer()
             this.apiCallGetTask()
             this.restart = this.countDown
+            this.currentTaskCall()
         }
     }
 </script>

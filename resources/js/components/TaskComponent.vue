@@ -85,7 +85,7 @@ export default {
     data(){
         return {
             edit : false,
-            minutesFixed : ''
+            minutesFixed : '',
         }
     },
     computed:{
@@ -163,6 +163,7 @@ export default {
                 .catch(error => 
                     console.log(error)
                 )
+            this.$emit('saved')
         },
         orderDown(){
             axios.patch('/api/tasks/down/' + this.task.id + '?api_token=' + this.api_token,{
@@ -176,6 +177,7 @@ export default {
                 .catch(error => 
                     console.log(error)
                 )
+            this.$emit('saved')
         }
     },
     created(){

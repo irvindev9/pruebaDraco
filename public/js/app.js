@@ -1983,6 +1983,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     todaydate: Number,
@@ -1998,7 +2018,8 @@ __webpack_require__.r(__webpack_exports__);
       newTask: false,
       dateTask: '',
       tasks: Object,
-      fixedDate: ''
+      fixedDate: '',
+      currentTask: Object
     };
   },
   computed: {},
@@ -2049,6 +2070,24 @@ __webpack_require__.r(__webpack_exports__);
     saved: function saved() {
       this.newTask = false;
       this.apiCallGetTask();
+    },
+    currentTaskCall: function currentTaskCall() {
+      var _this3 = this;
+
+      var today = new Date();
+      today.setDate(today.getDate() + this.todaydate);
+      this.fixedDate = today;
+      axios.get('/api/tasks/current', {
+        params: {
+          api_token: this.user.api_token,
+          date: today
+        }
+      }).then(function (response) {
+        console.log(response);
+        _this3.currentTask = response.data;
+      })["catch"](function (error) {
+        return console.log(error);
+      });
     }
   },
   created: function created() {
@@ -2063,6 +2102,7 @@ __webpack_require__.r(__webpack_exports__);
     this.countDownTimer();
     this.apiCallGetTask();
     this.restart = this.countDown;
+    this.currentTaskCall();
   }
 });
 
@@ -2349,6 +2389,7 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         return console.log(error);
       });
+      this.$emit('saved');
     },
     orderDown: function orderDown() {
       axios.patch('/api/tasks/down/' + this.task.id + '?api_token=' + this.api_token, {
@@ -2360,6 +2401,7 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         return console.log(error);
       });
+      this.$emit('saved');
     }
   },
   created: function created() {
@@ -38141,12 +38183,27 @@ var render = function() {
             ])
           ]),
           _vm._v(" "),
+          _c("div", { staticClass: "card-header" }, [
+            _c("div", { staticClass: "row justify-content-center" }, [
+              _c("div", { staticClass: "col-7" }, [
+                _c("b", [_vm._v("Tarea en curso:")]),
+                _vm._v(
+                  " " +
+                    _vm._s(_vm.currentTask.task.title) +
+                    "\n                        "
+                )
+              ]),
+              _vm._v(" "),
+              _vm._m(2)
+            ])
+          ]),
+          _vm._v(" "),
           _c(
             "div",
             { staticClass: "card-body" },
             [
               _vm.loading
-                ? _c("div", { staticClass: "row" }, [_vm._m(2)])
+                ? _c("div", { staticClass: "row" }, [_vm._m(3)])
                 : _vm._e(),
               _vm._v(" "),
               _vm._l(_vm.tasks.tasks, function(task) {
@@ -38196,7 +38253,7 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _vm._m(3)
+      _vm._m(4)
     ])
   ])
 }
@@ -38225,6 +38282,46 @@ var staticRenderFns = [
             "https://img.icons8.com/fluent-systems-filled/15/000000/statistics.png"
         }
       })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-4" }, [
+      _c(
+        "div",
+        {
+          staticClass: "btn-group",
+          attrs: { role: "group", "aria-label": "Basic example" }
+        },
+        [
+          _c("button", { staticClass: "btn btn-light border btn-sm" }, [
+            _c("img", {
+              attrs: { src: "https://img.icons8.com/small/15/000000/play.png" }
+            }),
+            _vm._v(" Iniciar\n                                ")
+          ]),
+          _vm._v(" "),
+          _c("button", { staticClass: "btn btn-light border btn-sm" }, [
+            _c("img", {
+              attrs: {
+                src: "https://img.icons8.com/small/15/000000/checked-2--v1.png"
+              }
+            }),
+            _vm._v(" Terminar\n                                ")
+          ]),
+          _vm._v(" "),
+          _c("button", { staticClass: "btn btn-light border btn-sm" }, [
+            _c("img", {
+              attrs: {
+                src: "https://img.icons8.com/small/15/000000/delete-sign.png"
+              }
+            }),
+            _vm._v(" Cancelar\n                                ")
+          ])
+        ]
+      )
     ])
   },
   function() {
