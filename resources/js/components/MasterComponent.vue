@@ -55,10 +55,10 @@
                             </div>
                             <div class="col-4">
                                 <div class="btn-group" role="group" aria-label="Basic example">
-                                    <button class="btn btn-light border btn-sm" @click="countDownTimer();pause = false;">
+                                    <button class="btn btn-light border btn-sm" @click="starTask()">
                                         <img src="https://img.icons8.com/small/15/000000/play.png"/> Iniciar
                                     </button>
-                                    <button class="btn btn-light border btn-sm">
+                                    <button class="btn btn-light border btn-sm" @click="maskAsCompleteTask()">
                                         <img src="https://img.icons8.com/small/15/000000/checked-2--v1.png"/> Terminar
                                     </button>
                                     <button class="btn btn-light border btn-sm" @click="resetTimer()">
@@ -78,7 +78,7 @@
                                 </div>
                             </div>
                         </div>
-                        <task-component v-for="task in tasks.tasks" :key="task.id" :task="task" :api_token="user.api_token" :fixedDate="fixedDate" v-on:cancel="cancel()" v-on:saved="saved()"/>
+                        <task-component :running="running" v-for="task in tasks.tasks" :key="task.id" :task="task" :api_token="user.api_token" :fixedDate="fixedDate" v-on:cancel="cancel()" v-on:saved="saved()"/>
                         <new-task-component :fixedDate="fixedDate" :api_token="user.api_token" v-on:cancel="cancel()" v-on:saved="saved()" v-if="newTask" />
                     </div>
                     <div class="card-footer text-right">
@@ -93,6 +93,7 @@
     </div>
 </template>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script>
     export default {
         props:{
@@ -156,6 +157,8 @@
                         this.timer = date.toISOString().substr(11, 8)
                         this.countDownTimer()
                     }, 1000)
+                }else if(this.countDown <= 0 && this.restart > 0){
+                    this.maskAsCompleteTask()
                 }
             },
             resetTimer(){
@@ -197,6 +200,34 @@
                     .catch(error => 
                         console.log(error)
                     )
+            }, 
+            maskAsCompleteTask(){
+                let timeRequired = parseInt(this.restart) - parseInt(this.countDown)
+                if(timeRequired > 0){
+                    axios.patch('/api/task/mark/' + this.currentTask.task.id + '?api_token=' + this.user.api_token,{
+                            params : {
+                                timeRequired : timeRequired
+                            }
+                        })
+                        .then(response => {
+                            console.log(response)
+                            this.currentTaskCall()
+                            this.apiCallGetTask()
+                        })
+                        .catch(error => 
+                            console.log(error)
+                        )
+                    this.running == false
+                }else{
+                    alert('¡No puedes terminar la tarea si no la has empezado!');
+                }
+                
+            },
+            starTask(){
+                if(this.running == false){
+                    this.countDownTimer();
+                    this.pause = false;
+                }
             }
         },
         created(){
@@ -204,10 +235,12 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
             this.dateTask = new Date(today.setDate(today.getDate() + this.todaydate)).toLocaleDateString('es-MX', options)
             
-            // this.countDownTimer()
             this.apiCallGetTask()
             this.restart = this.countDown
             this.currentTaskCall()
+            
         }
     }
+
+    
 </script>

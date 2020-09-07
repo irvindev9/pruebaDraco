@@ -26,3 +26,6 @@ Route::middleware('auth:api')->patch('tasks/down/{id}', 'TaskController@orderDow
 
 //Current task
 Route::middleware('auth:api')->get('tasks/current', 'TaskController@currentTask');
+
+//Mark As completed
+Route::middleware('auth:api')->patch('task/mark/{id}', 'TaskController@markAsCompleted');

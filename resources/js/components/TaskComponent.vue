@@ -81,6 +81,7 @@ export default {
         api_token : String,
         task : Object,
         fixedDate : Date,
+        running : Boolean
     },
     data(){
         return {
@@ -117,29 +118,16 @@ export default {
             this.$emit('cancel')
         },
         save(){
-            axios
-                .patch('/api/tasks/' + this.task.id + '?api_token=' + this.api_token,{
-                    params: {
-                        title: this.task.title,
-                        description: this.task.description,
-                        minutes: this.minutesValidated,
-                        seconds: this.secondsValidated,
-                        date: this.fixedDate,
-                    }
-                })
-                .then(response => (
-                    console.log(response)
-                ))
-                .catch(error => 
-                    console.log(error)
-                )
-
-            this.edit = !this.edit
-            this.$emit('saved')
-        },
-        destroy(){
-            if(confirm("Esta acción no se puede deshacer. ¿Esta seguro?")){
-                axios.delete('/api/tasks/' + this.task.id + '?api_token=' + this.api_token)
+            if(this.running == false){
+                axios.patch('/api/tasks/' + this.task.id + '?api_token=' + this.api_token,{
+                        params: {
+                            title: this.task.title,
+                            description: this.task.description,
+                            minutes: this.minutesValidated,
+                            seconds: this.secondsValidated,
+                            date: this.fixedDate,
+                        }
+                    })
                     .then(response => (
                         console.log(response)
                     ))
@@ -149,35 +137,64 @@ export default {
 
                 this.edit = !this.edit
                 this.$emit('saved')
+            }else{
+                alert('No puedes hacer cambios si hay una tarea en curso, cancela o detenla primero.')
+            }
+        },
+        destroy(){
+            if(this.running == false){
+                if(confirm("Esta acción no se puede deshacer. ¿Esta seguro?")){
+                    axios.delete('/api/tasks/' + this.task.id + '?api_token=' + this.api_token)
+                        .then(response => (
+                            console.log(response)
+                        ))
+                        .catch(error => 
+                            console.log(error)
+                        )
+
+                    this.edit = !this.edit
+                    this.$emit('saved')
+                }
+            }else{
+                alert('No puedes hacer cambios si hay una tarea en curso, cancela o detenla primero.')
             }
         },
         orderUp(){
-            axios.patch('/api/tasks/up/' + this.task.id + '?api_token=' + this.api_token,{
-                params : {
-                    date : this.fixedDate
-                }
-            })
-                .then(response => (
-                    console.log(response)
-                ))
-                .catch(error => 
-                    console.log(error)
-                )
-            this.$emit('saved')
+            if(this.running == false){
+                axios.patch('/api/tasks/up/' + this.task.id + '?api_token=' + this.api_token,{
+                        params : {
+                            date : this.fixedDate
+                        }
+                    })
+                    .then(response => (
+                        console.log(response)
+                    ))
+                    .catch(error => 
+                        console.log(error)
+                    )
+                this.$emit('saved')
+            }else{
+                alert('No puedes hacer cambios si hay una tarea en curso, cancela o detenla primero.')
+            }
+            
         },
         orderDown(){
-            axios.patch('/api/tasks/down/' + this.task.id + '?api_token=' + this.api_token,{
-                params : {
-                    date : this.fixedDate
-                }
-            })
-                .then(response => (
-                    console.log(response)
-                ))
-                .catch(error => 
-                    console.log(error)
-                )
-            this.$emit('saved')
+            if(this.running == false){
+                axios.patch('/api/tasks/down/' + this.task.id + '?api_token=' + this.api_token,{
+                        params : {
+                            date : this.fixedDate
+                        }
+                    })
+                    .then(response => (
+                        console.log(response)
+                    ))
+                    .catch(error => 
+                        console.log(error)
+                    )
+                this.$emit('saved')
+            }else{
+                alert('No puedes hacer cambios si hay una tarea en curso, cancela o detenla primero.')
+            }
         }
     },
     created(){

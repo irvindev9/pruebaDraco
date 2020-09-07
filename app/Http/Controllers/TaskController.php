@@ -166,4 +166,14 @@ class TaskController extends Controller
 
         return response("Success");
     }
+
+    public function markAsCompleted(Request $request, $id){
+
+        $task = Task::find($id);
+            $task->completed = 1;
+            $task->time_required = $request['params']['timeRequired'];
+        $task->save();
+        
+        return response("Success");
+    }
 }
