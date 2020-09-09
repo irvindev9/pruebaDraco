@@ -22,9 +22,9 @@
                 <button class="btn btn-light border" @click="showTaskCompleted = !showTaskCompleted">
                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/report-card.png"/>
                 </button>
-                <button class="btn btn-light border">
+                <a class="btn btn-light border" :href="'/chart/' + tasks.id" target="_blank">
                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/statistics.png"/>
-                </button>
+                </a>
                 <div class="btn-group" role="group" aria-label="Basic example">
                     <a :href="'/home/' + (todaydate - 1)" class="btn btn-light border">
                         <img src="https://img.icons8.com/fluent-systems-filled/15/000000/back.png"/> Anterior

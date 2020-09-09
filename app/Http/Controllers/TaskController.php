@@ -27,7 +27,6 @@ class TaskController extends Controller
                 $q->where('completed',0)->orderBy('order');
             }])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
         }
-        
 
         return response($dateTask);
     }

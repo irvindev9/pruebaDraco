@@ -75582,7 +75582,21 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _vm._m(1),
+        _c(
+          "a",
+          {
+            staticClass: "btn btn-light border",
+            attrs: { href: "/chart/" + _vm.tasks.id, target: "_blank" }
+          },
+          [
+            _c("img", {
+              attrs: {
+                src:
+                  "https://img.icons8.com/fluent-systems-filled/15/000000/statistics.png"
+              }
+            })
+          ]
+        ),
         _vm._v(" "),
         _c(
           "div",
@@ -75826,7 +75840,7 @@ var render = function() {
             { staticClass: "card-body" },
             [
               _vm.loading
-                ? _c("div", { staticClass: "row" }, [_vm._m(2)])
+                ? _c("div", { staticClass: "row" }, [_vm._m(1)])
                 : _vm._e(),
               _vm._v(" "),
               _vm._l(_vm.tasks.tasks, function(task) {
@@ -75903,7 +75917,7 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _vm._m(3)
+      _vm._m(2)
     ])
   ])
 }
@@ -75914,19 +75928,6 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("li", { staticClass: "list-group-item" }, [
       _c("b", [_vm._v("Tareas completadas")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("button", { staticClass: "btn btn-light border" }, [
-      _c("img", {
-        attrs: {
-          src:
-            "https://img.icons8.com/fluent-systems-filled/15/000000/statistics.png"
-        }
-      })
     ])
   },
   function() {
