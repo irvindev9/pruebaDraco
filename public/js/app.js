@@ -75528,9 +75528,9 @@ var render = function() {
       _vm.isEmpty
         ? _c("div", { staticClass: "col-12 col-md-4 alert alert-info" }, [
             _vm._v(
-              "\n            Contenido vacio, ¿Quieres cargarlo con 50 tareas? "
+              "\n            Contenido vacío, ¿Quieres cargarlo con 50 tareas? "
             ),
-            _c("a", { attrs: { href: "#!" } }, [_vm._v("Si")])
+            _c("a", { attrs: { href: "/fill" } }, [_vm._v("Si")])
           ])
         : _vm._e()
     ]),
@@ -75595,6 +75595,7 @@ var render = function() {
           "button",
           {
             staticClass: "btn btn-light border",
+            attrs: { title: "Tareas completadas" },
             on: {
               click: function($event) {
                 _vm.showTaskCompleted = !_vm.showTaskCompleted
@@ -75615,7 +75616,11 @@ var render = function() {
           "a",
           {
             staticClass: "btn btn-light border",
-            attrs: { href: "/chart/" + _vm.tasks.id, target: "_blank" }
+            attrs: {
+              href: "/chart/" + _vm.tasks.id,
+              target: "_blank",
+              title: "Grafica de ultima semana"
+            }
           },
           [
             _c("img", {

@@ -21,3 +21,4 @@ Auth::routes();
 
 Route::get('/home/{day?}', 'HomeController@index')->name('home');
 Route::get('/chart/{id?}', 'HomeController@chart')->name('chart');
+Route::get('/fill', 'HomeController@fill')->name('fill');

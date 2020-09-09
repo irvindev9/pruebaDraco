@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div v-if="isEmpty" class="col-12 col-md-4 alert alert-info">
-                Contenido vacio, ¿Quieres cargarlo con 50 tareas? <a href="#!">Si</a>
+                Contenido vacío, ¿Quieres cargarlo con 50 tareas? <a href="/fill">Si</a>
             </div>
         </div>
         <div class="row justify-content-center" v-if="showTaskCompleted">
@@ -24,10 +24,10 @@
                 </a>
             </div>
             <div class="col-12 col-md-5 my-1 text-right">
-                <button class="btn btn-light border" @click="showTaskCompleted = !showTaskCompleted">
+                <button class="btn btn-light border" @click="showTaskCompleted = !showTaskCompleted" title="Tareas completadas">
                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/report-card.png"/>
                 </button>
-                <a class="btn btn-light border" :href="'/chart/' + tasks.id" target="_blank">
+                <a class="btn btn-light border" :href="'/chart/' + tasks.id" target="_blank" title="Grafica de ultima semana">
                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/statistics.png"/>
                 </a>
                 <div class="btn-group" role="group" aria-label="Basic example">
