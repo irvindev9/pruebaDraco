@@ -2147,7 +2147,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         console.log(response);
 
-        if (response.data.task.title != undefined) {
+        if (typeof response.data.task !== 'undefined') {
           _this3.currentTask = response.data;
           var seconds = parseInt(response.data.task.minutes * 60) + parseInt(response.data.task.seconds);
           _this3.countDown = seconds;

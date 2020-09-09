@@ -233,7 +233,7 @@
                     })
                     .then(response => {
                         console.log(response)
-                        if(response.data.task.title != undefined){
+                        if(typeof response.data.task !== 'undefined'){
                             this.currentTask = response.data
                             let seconds = parseInt(response.data.task.minutes * 60) + parseInt(response.data.task.seconds);
                             this.countDown = seconds;
