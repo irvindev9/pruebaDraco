@@ -1,5 +1,10 @@
 <template>
     <div class="container">
+        <div class="row justify-content-center">
+            <div v-if="isEmpty" class="col-12 col-md-4 alert alert-info">
+                Contenido vacio, ¿Quieres cargarlo con 50 tareas? <a href="#!">Si</a>
+            </div>
+        </div>
         <div class="row justify-content-center" v-if="showTaskCompleted">
             <div class="col-8">
                 <ul class="list-group">
@@ -136,7 +141,8 @@
                 running : false,
                 filter : false,
                 showTaskCompleted : false,
-                completeTasks : Object
+                completeTasks : Object, 
+                isEmpty : false
             }
         },
         computed:{
@@ -277,7 +283,6 @@
                 }
             },
             completeList(){
-                this.loading = true
                 let today = new Date()
                 today.setDate(today.getDate() + this.todaydate);
                 this.fixedDate = today;
@@ -296,8 +301,22 @@
                     .catch(error => 
                         console.log(error)
                     )
-                    .finally(() => this.loading = false)
 
+            },
+            isEmptyCall(){
+                axios.get('/api/tasks/isEmpty',{
+                        params: {
+                            api_token: this.user.api_token
+                        }
+                    })
+                    .then(response => {
+                        console.log(response)
+                        this.isEmpty = response.data
+                        
+                    })
+                    .catch(error => 
+                        console.log(error)
+                    )
             }
         },
         created(){
@@ -308,6 +327,7 @@
             this.apiCallGetTask()
             this.restart = this.countDown
             this.currentTaskCall()
+            this.isEmptyCall()
             
         }
     }

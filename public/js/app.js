@@ -2025,6 +2025,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     todaydate: Number,
@@ -2049,7 +2054,8 @@ __webpack_require__.r(__webpack_exports__);
       running: false,
       filter: false,
       showTaskCompleted: false,
-      completeTasks: Object
+      completeTasks: Object,
+      isEmpty: false
     };
   },
   computed: {
@@ -2195,7 +2201,6 @@ __webpack_require__.r(__webpack_exports__);
     completeList: function completeList() {
       var _this5 = this;
 
-      this.loading = true;
       var today = new Date();
       today.setDate(today.getDate() + this.todaydate);
       this.fixedDate = today;
@@ -2209,8 +2214,20 @@ __webpack_require__.r(__webpack_exports__);
         _this5.completeTasks = response.data;
       })["catch"](function (error) {
         return console.log(error);
-      })["finally"](function () {
-        return _this5.loading = false;
+      });
+    },
+    isEmptyCall: function isEmptyCall() {
+      var _this6 = this;
+
+      axios.get('/api/tasks/isEmpty', {
+        params: {
+          api_token: this.user.api_token
+        }
+      }).then(function (response) {
+        console.log(response);
+        _this6.isEmpty = response.data;
+      })["catch"](function (error) {
+        return console.log(error);
       });
     }
   },
@@ -2226,6 +2243,7 @@ __webpack_require__.r(__webpack_exports__);
     this.apiCallGetTask();
     this.restart = this.countDown;
     this.currentTaskCall();
+    this.isEmptyCall();
   }
 });
 
@@ -75506,6 +75524,17 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "row justify-content-center" }, [
+      _vm.isEmpty
+        ? _c("div", { staticClass: "col-12 col-md-4 alert alert-info" }, [
+            _vm._v(
+              "\n            Contenido vacio, ¿Quieres cargarlo con 50 tareas? "
+            ),
+            _c("a", { attrs: { href: "#!" } }, [_vm._v("Si")])
+          ])
+        : _vm._e()
+    ]),
+    _vm._v(" "),
     _vm.showTaskCompleted
       ? _c("div", { staticClass: "row justify-content-center" }, [
           _c("div", { staticClass: "col-8" }, [

@@ -32,3 +32,6 @@ Route::middleware('auth:api')->patch('task/mark/{id}', 'TaskController@markAsCom
 
 //Get Completed Tasks
 Route::middleware('auth:api')->get('tasks/completed', 'TaskController@completedList');
+
+//Is empty?
+Route::middleware('auth:api')->get('tasks/isEmpty', 'TaskController@isEmpty');

@@ -205,4 +205,15 @@ class TaskController extends Controller
 
         return response($dateTask);
     }
+
+    public function isEmpty(Request $request){
+        $task = DateTask::where('user_id',$request->user()->id)->count();
+        $empty = 0;
+
+        if($task == 0){
+            $empty = 1;
+        }
+
+        return response($empty);
+    }
 }
