@@ -223,27 +223,29 @@
                 let today = new Date()
                 today.setDate(today.getDate() + this.todaydate);
                 this.fixedDate = today;
-
-                axios.get('/api/tasks/current',{
-                        params: {
-                            api_token: this.user.api_token,
-                            date: today,
-                            filter : this.filter
-                        }
-                    })
-                    .then(response => {
-                        console.log(response)
-                        if(typeof response.data.task !== 'undefined'){
-                            this.currentTask = response.data
-                            let seconds = parseInt(response.data.task.minutes * 60) + parseInt(response.data.task.seconds);
-                            this.countDown = seconds;
-                            this.restart = seconds;
-                            this.resetTimer()
-                        }
-                    })
-                    .catch(error => 
-                        console.log(error)
-                    )
+                
+                setTimeout(() => {
+                    axios.get('/api/tasks/current',{
+                            params: {
+                                api_token: this.user.api_token,
+                                date: today,
+                                filter : this.filter
+                            }
+                        })
+                        .then(response => {
+                            console.log(response)
+                            if(typeof response.data.task !== 'undefined'){
+                                this.currentTask = response.data
+                                let seconds = parseInt(response.data.task.minutes * 60) + parseInt(response.data.task.seconds);
+                                this.countDown = seconds;
+                                this.restart = seconds;
+                                this.resetTimer()
+                            }
+                        })
+                        .catch(error => 
+                            console.log(error)
+                        )
+                }, 1000)
             }, 
             maskAsCompleteTask(){
                 let timeRequired = parseInt(this.restart) - parseInt(this.countDown)
