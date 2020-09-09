@@ -14,7 +14,7 @@
         <div class="container">
             <div class="row justify-content-center mt-5">
                 <div class="col-12 col-md-6 text-center">
-                    <b>{{date('F j Y',strtotime($day->date_task))}}</b>
+                    <b>{!! isset($day->date_task) ? date('F j Y',strtotime($day->date_task)) : 'No existe la fecha'!!}</b>
                 </div>
             </div>
             <div class="row justify-content-center mt-1">
