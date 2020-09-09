@@ -13,10 +13,14 @@ class DateTask extends Model
     ];
 
     public function tasks(){
-        return $this->hasMany(Task::class,'date_id')->orderBy('order');
+        return $this->hasMany(Task::class,'date_id');
     }
 
+    // public function tasksfilter(){
+    //     return $this->hasMany(Task::class,'date_id')->orderBy('minutes')->orderBy('seconds');
+    // }
+
     public function task(){
-        return $this->hasOne(Task::class,'date_id')->orderBy('order');
+        return $this->hasOne(Task::class,'date_id');
     }
 }

@@ -2004,6 +2004,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     todaydate: Number,
@@ -2025,10 +2046,21 @@ __webpack_require__.r(__webpack_exports__);
           title: ''
         }
       },
-      running: false
+      running: false,
+      filter: false,
+      showTaskCompleted: false,
+      completeTasks: Object
     };
   },
-  computed: {},
+  computed: {
+    filterLabel: function filterLabel() {
+      if (this.filter == false) {
+        return 'duración';
+      } else {
+        return 'orden';
+      }
+    }
+  },
   methods: {
     apiCallGetTask: function apiCallGetTask() {
       var _this = this;
@@ -2041,15 +2073,19 @@ __webpack_require__.r(__webpack_exports__);
         axios.get('/api/tasks', {
           params: {
             api_token: _this.user.api_token,
-            date: today
+            date: today,
+            filter: _this.filter
           }
         }).then(function (response) {
           console.log(response);
           _this.tasks = response.data;
         })["catch"](function (error) {
           return console.log(error);
+        })["finally"](function () {
+          return _this.loading = false;
         });
-        _this.loading = false;
+
+        _this.completeList();
       }, 1000);
     },
     countDownTimer: function countDownTimer() {
@@ -2083,10 +2119,12 @@ __webpack_require__.r(__webpack_exports__);
     cancel: function cancel() {
       this.newTask = false;
       this.apiCallGetTask();
+      this.currentTaskCall();
     },
     saved: function saved() {
       this.newTask = false;
       this.apiCallGetTask();
+      this.currentTaskCall();
     },
     currentTaskCall: function currentTaskCall() {
       var _this3 = this;
@@ -2097,16 +2135,20 @@ __webpack_require__.r(__webpack_exports__);
       axios.get('/api/tasks/current', {
         params: {
           api_token: this.user.api_token,
-          date: today
+          date: today,
+          filter: this.filter
         }
       }).then(function (response) {
         console.log(response);
-        _this3.currentTask = response.data;
-        var seconds = parseInt(response.data.task.minutes * 60) + parseInt(response.data.task.seconds);
-        _this3.countDown = seconds;
-        _this3.restart = seconds;
 
-        _this3.resetTimer();
+        if (response.data.task.title != undefined) {
+          _this3.currentTask = response.data;
+          var seconds = parseInt(response.data.task.minutes * 60) + parseInt(response.data.task.seconds);
+          _this3.countDown = seconds;
+          _this3.restart = seconds;
+
+          _this3.resetTimer();
+        }
       })["catch"](function (error) {
         return console.log(error);
       });
@@ -2140,6 +2182,36 @@ __webpack_require__.r(__webpack_exports__);
         this.countDownTimer();
         this.pause = false;
       }
+    },
+    filterReload: function filterReload() {
+      if (this.running == false) {
+        this.filter = !this.filter;
+        this.apiCallGetTask();
+        this.currentTaskCall();
+      } else {
+        alert('No puedes hacer cambios si hay una tarea en curso, cancela o detenla primero.');
+      }
+    },
+    completeList: function completeList() {
+      var _this5 = this;
+
+      this.loading = true;
+      var today = new Date();
+      today.setDate(today.getDate() + this.todaydate);
+      this.fixedDate = today;
+      axios.get('/api/tasks/completed', {
+        params: {
+          api_token: this.user.api_token,
+          date: today
+        }
+      }).then(function (response) {
+        console.log(response);
+        _this5.completeTasks = response.data;
+      })["catch"](function (error) {
+        return console.log(error);
+      })["finally"](function () {
+        return _this5.loading = false;
+      });
     }
   },
   created: function created() {
@@ -2364,7 +2436,8 @@ __webpack_require__.r(__webpack_exports__);
     api_token: String,
     task: Object,
     fixedDate: Date,
-    running: Boolean
+    running: Boolean,
+    filter: Boolean
   },
   data: function data() {
     return {
@@ -2440,6 +2513,11 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     orderUp: function orderUp() {
+      if (this.filter == true) {
+        alert('Solo se puede cambiar el orden cuando esta filtrado por orden');
+        return;
+      }
+
       if (this.running == false) {
         axios.patch('/api/tasks/up/' + this.task.id + '?api_token=' + this.api_token, {
           params: {
@@ -2456,6 +2534,11 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     orderDown: function orderDown() {
+      if (this.filter == true) {
+        alert('Solo se puede cambiar el orden cuando esta filtrado por orden');
+        return;
+      }
+
       if (this.running == false) {
         axios.patch('/api/tasks/down/' + this.task.id + '?api_token=' + this.api_token, {
           params: {
@@ -75423,6 +75506,37 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
+    _vm.showTaskCompleted
+      ? _c("div", { staticClass: "row justify-content-center" }, [
+          _c("div", { staticClass: "col-8" }, [
+            _c(
+              "ul",
+              { staticClass: "list-group" },
+              [
+                _vm._m(0),
+                _vm._v(" "),
+                _vm._l(_vm.completeTasks.tasks, function(task) {
+                  return _c(
+                    "li",
+                    { key: task.id, staticClass: "list-group-item" },
+                    [
+                      _c("img", {
+                        attrs: {
+                          src:
+                            "https://img.icons8.com/color/15/000000/check-all.png"
+                        }
+                      }),
+                      _vm._v(" " + _vm._s(task.title) + "\n                ")
+                    ]
+                  )
+                })
+              ],
+              2
+            )
+          ])
+        ])
+      : _vm._e(),
+    _vm._v(" "),
     _c("div", { staticClass: "row justify-content-center" }, [
       _c("div", { staticClass: "col-12 col-md-5 my-1" }, [
         _c(
@@ -75448,7 +75562,25 @@ var render = function() {
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "col-12 col-md-5 my-1 text-right" }, [
-        _vm._m(0),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-light border",
+            on: {
+              click: function($event) {
+                _vm.showTaskCompleted = !_vm.showTaskCompleted
+              }
+            }
+          },
+          [
+            _c("img", {
+              attrs: {
+                src:
+                  "https://img.icons8.com/fluent-systems-filled/15/000000/report-card.png"
+              }
+            })
+          ]
+        ),
         _vm._v(" "),
         _vm._m(1),
         _vm._v(" "),
@@ -75604,7 +75736,7 @@ var render = function() {
           _vm._v(" "),
           _c("div", { staticClass: "card-header" }, [
             _c("div", { staticClass: "row justify-content-center" }, [
-              _c("div", { staticClass: "col-7" }, [
+              _c("div", { staticClass: "col-12 col-md-7" }, [
                 _c("b", [_vm._v("Tarea en curso:")]),
                 _vm._v(
                   " " +
@@ -75613,7 +75745,7 @@ var render = function() {
                 )
               ]),
               _vm._v(" "),
-              _c("div", { staticClass: "col-4" }, [
+              _c("div", { staticClass: "col-12 col-md-4" }, [
                 _c(
                   "div",
                   {
@@ -75704,7 +75836,8 @@ var render = function() {
                     running: _vm.running,
                     task: task,
                     api_token: _vm.user.api_token,
-                    fixedDate: _vm.fixedDate
+                    fixedDate: _vm.fixedDate,
+                    filter: _vm.filter
                   },
                   on: {
                     cancel: function($event) {
@@ -75737,10 +75870,35 @@ var render = function() {
             2
           ),
           _vm._v(" "),
-          _c("div", { staticClass: "card-footer text-right" }, [
-            _vm._v(
-              "\n                    © Irvin Raúl López Contreras\n                "
-            )
+          _c("div", { staticClass: "card-footer" }, [
+            _c("div", { staticClass: "row" }, [
+              _c("div", { staticClass: "col-12 col-md-6" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-light border",
+                    on: {
+                      click: function($event) {
+                        return _vm.filterReload()
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                                Filtrar por " +
+                        _vm._s(_vm.filterLabel) +
+                        "\n                            "
+                    )
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-12 col-md-6 text-right" }, [
+                _vm._v(
+                  "\n                            © Irvin Raúl López Contreras\n                        "
+                )
+              ])
+            ])
           ])
         ])
       ]),
@@ -75754,13 +75912,8 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("button", { staticClass: "btn btn-light border" }, [
-      _c("img", {
-        attrs: {
-          src:
-            "https://img.icons8.com/fluent-systems-filled/15/000000/report-card.png"
-        }
-      })
+    return _c("li", { staticClass: "list-group-item" }, [
+      _c("b", [_vm._v("Tareas completadas")])
     ])
   },
   function() {

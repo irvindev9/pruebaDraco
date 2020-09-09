@@ -1,5 +1,17 @@
 <template>
     <div class="container">
+        <div class="row justify-content-center" v-if="showTaskCompleted">
+            <div class="col-8">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <b>Tareas completadas</b>
+                    </li>
+                    <li class="list-group-item" v-for="task in completeTasks.tasks" :key="task.id">
+                        <img src="https://img.icons8.com/color/15/000000/check-all.png"/> {{task.title}}
+                    </li>
+                </ul>
+            </div>
+        </div>
         <div class="row justify-content-center">
             <div class="col-12 col-md-5 my-1">
                 <a class="btn btn-light px-2 border" @click="newTask = true">
@@ -7,7 +19,7 @@
                 </a>
             </div>
             <div class="col-12 col-md-5 my-1 text-right">
-                <button class="btn btn-light border">
+                <button class="btn btn-light border" @click="showTaskCompleted = !showTaskCompleted">
                     <img src="https://img.icons8.com/fluent-systems-filled/15/000000/report-card.png"/>
                 </button>
                 <button class="btn btn-light border">
@@ -50,10 +62,10 @@
                     </div>
                     <div class="card-header">
                         <div class="row justify-content-center">
-                            <div class="col-7">
+                            <div class="col-12 col-md-7">
                                 <b>Tarea en curso:</b> {{currentTask.task.title}}
                             </div>
-                            <div class="col-4">
+                            <div class="col-12 col-md-4">
                                 <div class="btn-group" role="group" aria-label="Basic example">
                                     <button class="btn btn-light border btn-sm" @click="starTask()">
                                         <img src="https://img.icons8.com/small/15/000000/play.png"/> Iniciar
@@ -78,11 +90,20 @@
                                 </div>
                             </div>
                         </div>
-                        <task-component :running="running" v-for="task in tasks.tasks" :key="task.id" :task="task" :api_token="user.api_token" :fixedDate="fixedDate" v-on:cancel="cancel()" v-on:saved="saved()"/>
+                        <task-component :running="running" v-for="task in tasks.tasks" :key="task.id" :task="task" :api_token="user.api_token" :fixedDate="fixedDate" v-on:cancel="cancel()" v-on:saved="saved()" :filter="filter"/>
                         <new-task-component :fixedDate="fixedDate" :api_token="user.api_token" v-on:cancel="cancel()" v-on:saved="saved()" v-if="newTask" />
                     </div>
-                    <div class="card-footer text-right">
-                        © Irvin Raúl López Contreras
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <button class="btn btn-light border" @click="filterReload()">
+                                    Filtrar por {{filterLabel}}
+                                </button>
+                            </div>
+                            <div class="col-12 col-md-6 text-right">
+                                © Irvin Raúl López Contreras
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -112,11 +133,20 @@
                 tasks : Object,
                 fixedDate : '',
                 currentTask : {task : {title : ''}}, 
-                running : false
+                running : false,
+                filter : false,
+                showTaskCompleted : false,
+                completeTasks : Object
             }
         },
         computed:{
-            
+            filterLabel(){
+                if(this.filter == false){
+                    return 'duración'
+                }else{
+                    return 'orden'
+                }
+            }
         },
         methods:{
             apiCallGetTask(){
@@ -129,19 +159,22 @@
                 axios.get('/api/tasks',{
                         params: {
                             api_token: this.user.api_token,
-                            date: today
+                            date: today, 
+                            filter : this.filter
                         }
                     })
                     .then(response => {
                         console.log(response)
                         this.tasks = response.data
+                        
                     })
                     .catch(error => 
                         console.log(error)
                     )
+                    .finally(() => this.loading = false)
 
-                this.loading = false
-
+                
+                    this.completeList();
                 }, 1000)
                 
             },
@@ -172,11 +205,13 @@
             cancel() {
                 this.newTask = false
                 this.apiCallGetTask()
+                this.currentTaskCall()
             }
             ,
             saved() {
                 this.newTask = false
                 this.apiCallGetTask()
+                this.currentTaskCall()
             },
             currentTaskCall(){
                 let today = new Date()
@@ -186,16 +221,19 @@
                 axios.get('/api/tasks/current',{
                         params: {
                             api_token: this.user.api_token,
-                            date: today
+                            date: today,
+                            filter : this.filter
                         }
                     })
                     .then(response => {
                         console.log(response)
-                        this.currentTask = response.data
-                        let seconds = parseInt(response.data.task.minutes * 60) + parseInt(response.data.task.seconds);
-                        this.countDown = seconds;
-                        this.restart = seconds;
-                        this.resetTimer()
+                        if(response.data.task.title != undefined){
+                            this.currentTask = response.data
+                            let seconds = parseInt(response.data.task.minutes * 60) + parseInt(response.data.task.seconds);
+                            this.countDown = seconds;
+                            this.restart = seconds;
+                            this.resetTimer()
+                        }
                     })
                     .catch(error => 
                         console.log(error)
@@ -228,6 +266,38 @@
                     this.countDownTimer();
                     this.pause = false;
                 }
+            },
+            filterReload(){
+                if(this.running == false){
+                    this.filter = !this.filter;
+                    this.apiCallGetTask();
+                    this.currentTaskCall();
+                }else{
+                    alert('No puedes hacer cambios si hay una tarea en curso, cancela o detenla primero.')
+                }
+            },
+            completeList(){
+                this.loading = true
+                let today = new Date()
+                today.setDate(today.getDate() + this.todaydate);
+                this.fixedDate = today;
+
+                axios.get('/api/tasks/completed',{
+                        params: {
+                            api_token: this.user.api_token,
+                            date: today
+                        }
+                    })
+                    .then(response => {
+                        console.log(response)
+                        this.completeTasks = response.data
+                        
+                    })
+                    .catch(error => 
+                        console.log(error)
+                    )
+                    .finally(() => this.loading = false)
+
             }
         },
         created(){

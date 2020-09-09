@@ -81,7 +81,8 @@ export default {
         api_token : String,
         task : Object,
         fixedDate : Date,
-        running : Boolean
+        running : Boolean,
+        filter : Boolean
     },
     data(){
         return {
@@ -160,6 +161,11 @@ export default {
             }
         },
         orderUp(){
+            if(this.filter == true){
+                alert('Solo se puede cambiar el orden cuando esta filtrado por orden')
+                return;
+            }
+
             if(this.running == false){
                 axios.patch('/api/tasks/up/' + this.task.id + '?api_token=' + this.api_token,{
                         params : {
@@ -179,6 +185,11 @@ export default {
             
         },
         orderDown(){
+            if(this.filter == true){
+                alert('Solo se puede cambiar el orden cuando esta filtrado por orden')
+                return;
+            }
+
             if(this.running == false){
                 axios.patch('/api/tasks/down/' + this.task.id + '?api_token=' + this.api_token,{
                         params : {

@@ -18,9 +18,16 @@ class TaskController extends Controller
         $date = explode('T',$request->date);
         $date = $date[0];
 
-        $dateTask = DateTask::with(['tasks' => function($q){
-            $q->where('completed',0);
-        }])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
+        if($request->filter == "true"){
+            $dateTask = DateTask::with(['tasks' => function($q){
+                $q->where('completed',0)->orderByRaw('ABS(minutes) Desc, ABS(seconds) Desc');
+            }])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
+        }else{
+            $dateTask = DateTask::with(['tasks' => function($q){
+                $q->where('completed',0)->orderBy('order');
+            }])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
+        }
+        
 
         return response($dateTask);
     }
@@ -34,10 +41,16 @@ class TaskController extends Controller
     {
         $date = explode('T',$request->date);
         $date = $date[0];
-
-        $dateTask = DateTask::with(['task' => function($q){
-            $q->where('completed',0);
-        }])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
+        
+        if($request->filter == "true"){
+            $dateTask = DateTask::with(['task' => function($q){
+                $q->where('completed',0)->orderByRaw('ABS(minutes) Desc, ABS(seconds) Desc');
+            }])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
+        }else{
+            $dateTask = DateTask::with(['task' => function($q){
+                $q->where('completed',0)->orderBy('order');
+            }])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
+        }
 
         return response($dateTask);
     }
@@ -75,7 +88,9 @@ class TaskController extends Controller
         $date = explode('T',$request['params']['date']);
         $date = $date[0];
 
-        $dateTask = DateTask::with(['tasks'])->where('user_id',$request->user()->id)->where('date_task', $date)->first()->toArray();
+        $dateTask = DateTask::with(['tasks' => function($q){
+            $q->where('completed',0)->orderBy('order');
+        }])->where('user_id',$request->user()->id)->where('date_task', $date)->first()->toArray();
 
         $upLevel = null;
 
@@ -84,6 +99,8 @@ class TaskController extends Controller
                 $upLevel = $key;
             }
         }
+
+        // dd($upLevel);
 
         if(isset($dateTask['tasks'][$upLevel - 1])){
             $task1 = Task::find($dateTask['tasks'][$upLevel]['id']);
@@ -108,7 +125,9 @@ class TaskController extends Controller
         $date = explode('T',$request['params']['date']);
         $date = $date[0];
 
-        $dateTask = DateTask::with(['tasks'])->where('user_id',$request->user()->id)->where('date_task', $date)->first()->toArray();
+        $dateTask = DateTask::with(['tasks' => function($q){
+            $q->where('completed',0)->orderBy('order');
+        }])->where('user_id',$request->user()->id)->where('date_task', $date)->first()->toArray();
 
         $upLevel = null;
 
@@ -175,5 +194,16 @@ class TaskController extends Controller
         $task->save();
         
         return response("Success");
+    }
+
+    public function completedList(Request $request){
+        $date = explode('T',$request->date);
+        $date = $date[0];
+
+        $dateTask = DateTask::with(['tasks' => function($q){
+            $q->where('completed',1)->orderBy('order');
+        }])->where('user_id',$request->user()->id)->where('date_task', $date)->first();
+
+        return response($dateTask);
     }
 }
